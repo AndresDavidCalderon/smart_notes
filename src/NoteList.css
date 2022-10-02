@@ -1,0 +1,9 @@
+#note_list{
+    padding: 10px;
+}
+
+#note_item{
+    position: relative;
+    background-color: gray;
+    margin-bottom: 10px;
+}

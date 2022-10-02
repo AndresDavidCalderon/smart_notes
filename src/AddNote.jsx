@@ -6,7 +6,8 @@ class AddNote extends React.Component{
       super(props)
       this.state={
         visible:false,
-        noteText:""
+        noteText:"",
+        currentID:0
       }
     }
     changeVisibility=(visible)=>{
@@ -22,8 +23,12 @@ class AddNote extends React.Component{
         {this.state.visible ? <div id="add_dialogue">
           <button id="add_note_close" onClick={()=>{this.changeVisibility(false)}}>close</button>
           <button id="note_add_confirm" onClick={()=>{this.props.noteAdd({
-            text:this.state.noteText
+            text:this.state.noteText,
+            id:this.state.currentID
           })
+
+          //we dont use setstate because this doesnt need re-rendering.
+          this.state.currentID++
           this.changeVisibility(false);
           }}> add note</button>
           <h1>Note:</h1>

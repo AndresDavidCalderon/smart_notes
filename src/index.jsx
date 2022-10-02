@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import AddNote from './AddNote';
+import NoteList from "./NoteList"
 
 class App extends React.Component{
   constructor(props){
@@ -21,6 +22,7 @@ class App extends React.Component{
     return (
       <div>
         <AddNote noteAdd={this.addNote} ></AddNote>
+        <NoteList notes={this.state.notes}></NoteList>
       </div>
     );
   }
