@@ -1,13 +1,34 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import AddNote from './AddNote';
+
+class App extends React.Component{
+  constructor(props){
+    super(props);
+    this.state={
+      notes:[]
+    }
+  }
+  addNote=(note)=>{
+    this.setState((oldState)=>{
+      return ({notes:oldState.notes.contact(note)})
+    })
+  }
+  render(){
+    return (
+      <div>
+        <AddNote noteAdd={this.addNote} ></AddNote>
+      </div>
+    );
+  }
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <App></App>
   </React.StrictMode>
 );
 
