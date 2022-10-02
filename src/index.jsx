@@ -10,10 +10,11 @@ class App extends React.Component{
     this.state={
       notes:[]
     }
+    this.addNote=this.addNote.bind(this)
   }
   addNote=(note)=>{
-    this.setState((oldState)=>{
-      return ({notes:oldState.notes.contact(note)})
+    this.setState((prevState,props)=>{
+      return ({notes:prevState.notes.concat([note])})
     })
   }
   render(){
