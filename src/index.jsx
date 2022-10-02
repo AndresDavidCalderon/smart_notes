@@ -9,20 +9,36 @@ class App extends React.Component{
   constructor(props){
     super(props);
     this.state={
-      notes:[]
+      notes:[],
+      addingNote:false,
+      currentNote:{
+        text:"",
+      },
+      noteIndex:0,
     }
     this.addNote=this.addNote.bind(this)
   }
   addNote=(note)=>{
+    note.id=this.state.noteIndex
     this.setState((prevState,props)=>{
-      return ({notes:prevState.notes.concat([note])})
+      return ({
+        notes:prevState.notes.concat([note]),
+        id:this.state.noteIndex
+      })
     })
+  }
+  showAddNote=(visible)=>{
+    this.setState({addingNote:visible})
+  }
+  setEditingNote=(note)=>{
+    this.setState({currentNote:note})
   }
   render(){
     return (
       <div>
-        <AddNote noteAdd={this.addNote} ></AddNote>
-        <NoteList notes={this.state.notes}></NoteList>
+        {this.state.addingNote ? <AddNote note={this.state.currentNote} noteAdd={this.addNote} visibilityChange={this.showAddNote} ></AddNote> : false}
+        <NoteList showNote={this.showAddNote} setNote={this.setNote} notes={this.state.notes}></NoteList>
+        <button id="add_button" onClick={()=> {this.showAddNote(true)}}>add a note</button>
       </div>
     );
   }

@@ -2,39 +2,21 @@ import React from 'react';
 import "./AddNote.css"
 
 class AddNote extends React.Component{
-    constructor(props){
-      super(props)
-      this.state={
-        visible:false,
-        noteText:"",
-        currentID:0
-      }
-    }
-    changeVisibility=(visible)=>{
-      this.setState({
-        visible:visible
-      })
-    }
     onNoteTextChanged=(event)=>{
-      this.setState({noteText:event.target.value})
+      this.props.note.text=event.target.value;
     }
     render(){
       return <div>
-        {this.state.visible ? <div id="add_dialogue">
+        <div id="add_dialogue">
           <button id="add_note_close" onClick={()=>{this.changeVisibility(false)}}>close</button>
           <button id="note_add_confirm" onClick={()=>{this.props.noteAdd({
-            text:this.state.noteText,
-            id:this.state.currentID
+            text:this.props.note.text
           })
-
-          //we dont use setstate because this doesnt need re-rendering.
-          this.state.currentID++
-          this.changeVisibility(false);
+          this.props.visibilityChange(false);
           }}> add note</button>
           <h1>Note:</h1>
-          <textarea onChange={this.onNoteTextChanged} value={this.state.noteText} id="note_edit"></textarea>
-        </div>:false}
-        <button id="add_button" onClick={()=> {this.changeVisibility(true)}}>add a note</button>
+          <textarea onChange={this.onNoteTextChanged} value={this.props.note.text} id="note_edit"></textarea>
+        </div>
       </div>
     }
   }
