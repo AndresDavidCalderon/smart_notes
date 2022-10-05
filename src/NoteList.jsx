@@ -17,7 +17,7 @@ function NoteList(props){
     return (<div id="note_list">
         {
             props.notes.map((note,index)=>{
-            return(<ListItem setNote={props.setNote} showNote={props.showNote} note={note} key={note.text+note.id} ></ListItem>)
+            return(<ListItem setNote={props.setNote} showNote={props.showNote} note={note} key={note.id} ></ListItem>)
         })
         }
     </div>)

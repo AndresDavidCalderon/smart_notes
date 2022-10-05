@@ -14,7 +14,8 @@
     left: 50%;
     margin-top: -30vh;
     margin-left: -30vw;
-    background-color:grey;
+    background-color:teal;
+    border-radius: 10px;
   }
   
   #add_note_close{

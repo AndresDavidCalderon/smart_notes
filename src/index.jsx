@@ -6,25 +6,42 @@ import AddNote from './AddNote';
 import NoteList from "./NoteList"
 
 class App extends React.Component{
+  defaultNote={
+    text:"",
+    exists:false,
+    id:0
+  }
   constructor(props){
     super(props);
     this.state={
       notes:[],
       addingNote:false,
-      currentNote:{
-        text:"",
-      },
+      currentNote:{...this.defaultNote},
       noteIndex:0,
     }
     this.addNote=this.addNote.bind(this)
+  }
+  changeNoteProperty=(newProperties)=>{
+    this.setState((prevState,props)=>{
+      return({
+        state:Object.assign(prevState.currentNote,newProperties)
+      })
+    })
   }
   addNote=(note)=>{
     note.id=this.state.noteIndex
     this.setState((prevState,props)=>{
       return ({
         notes:prevState.notes.concat([note]),
-        id:this.state.noteIndex
+        noteIndex:prevState.noteIndex+1,
+        currentNote:{...this.defaultNote}
       })
+    })
+  }
+  ConfirmNoteChange=()=>{
+    this.setState({
+      addingNote:false,
+      currentNote:{...this.defaultNote}
     })
   }
   showAddNote=(visible)=>{
@@ -36,8 +53,14 @@ class App extends React.Component{
   render(){
     return (
       <div>
-        {this.state.addingNote ? <AddNote note={this.state.currentNote} noteAdd={this.addNote} visibilityChange={this.showAddNote} ></AddNote> : false}
-        <NoteList showNote={this.showAddNote} setNote={this.setNote} notes={this.state.notes}></NoteList>
+        <NoteList showNote={this.showAddNote} setNote={this.setEditingNote} notes={this.state.notes}></NoteList>
+        {this.state.addingNote ? <AddNote 
+          changer={this.changeNoteProperty}
+          note={this.state.currentNote}
+          noteAdd={this.addNote}
+          changeVisibility={this.showAddNote}
+          confirmNoteChange={this.ConfirmNoteChange}
+          ></AddNote> : false}
         <button id="add_button" onClick={()=> {this.showAddNote(true)}}>add a note</button>
       </div>
     );
