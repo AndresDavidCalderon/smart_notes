@@ -38,6 +38,16 @@ class App extends React.Component{
       })
     })
   }
+  deleteNote=(note)=>{
+    let idx=this.state.notes.indexOf(note)
+    let newNotes=[...this.state.notes]
+    newNotes.splice(idx,1)
+    this.setState({
+        notes:newNotes,
+        addingNote:false,
+        currentNote:{...this.defaultNote}
+    })
+  }
   ConfirmNoteChange=()=>{
     this.setState({
       addingNote:false,
@@ -60,6 +70,7 @@ class App extends React.Component{
           noteAdd={this.addNote}
           changeVisibility={this.showAddNote}
           confirmNoteChange={this.ConfirmNoteChange}
+          deleteNote={this.deleteNote}
           ></AddNote> : false}
         <button id="add_button" onClick={()=> {this.showAddNote(true)}}>add a note</button>
       </div>

@@ -17,7 +17,11 @@
     background-color:teal;
     border-radius: 10px;
   }
-  
+  #note_properties{
+    display: flex;
+    flex-direction: column;
+    margin-right: 90px;
+  }
   #add_note_close{
     position: absolute;
     right: 15px;
@@ -26,7 +30,6 @@
   #note_edit{
     top:25px;
     left:10px;
-    width:75%;
     height: 150px;
   }
   

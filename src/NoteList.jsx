@@ -1,14 +1,23 @@
 import React from "react";
 import "./NoteList.css"
 
+
 class ListItem extends React.Component{
+    constructor(props){
+        super(props);
+        this.state={
+            contextMenu:false,
+        }
+    }
     showNote=()=>{
-        this.props.showNote(true)
-        this.props.setNote(this.props.note)
+        this.props.showNote(true);
+        this.props.setNote(this.props.note);
     }
     render(){
         return(
-        <button onClick={this.showNote} id="note_item">{this.props.note.text}</button>
+        <button
+            onContextMenu={this.contextMenu} onClick={this.showNote} id="note_item">{this.props.note.text}
+        </button>
         )
     }
 }
