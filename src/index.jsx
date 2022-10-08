@@ -3,76 +3,89 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import AddNote from './AddNote';
-import NoteList from "./NoteList"
+import NoteList from './NoteList';
 
-class App extends React.Component{
-  defaultNote={
-    text:"",
-    exists:false,
-    id:0
-  }
-  constructor(props){
+class App extends React.Component {
+  defaultNote = {
+    text: '',
+    exists: false,
+    id: 0,
+  };
+
+  constructor(props) {
     super(props);
-    this.state={
-      notes:[],
-      addingNote:false,
-      currentNote:{...this.defaultNote},
-      noteIndex:0,
-    }
-    this.addNote=this.addNote.bind(this)
+    this.state = {
+      notes: [],
+      addingNote: false,
+      currentNote: { ...this.defaultNote },
+      noteIndex: 0,
+    };
+    this.addNote = this.addNote.bind(this);
   }
-  changeNoteProperty=(newProperties)=>{
-    this.setState((prevState,props)=>{
-      return({
-        state:Object.assign(prevState.currentNote,newProperties)
-      })
-    })
-  }
-  addNote=(note)=>{
-    note.id=this.state.noteIndex
-    this.setState((prevState,props)=>{
-      return ({
-        notes:prevState.notes.concat([note]),
-        noteIndex:prevState.noteIndex+1,
-        currentNote:{...this.defaultNote}
-      })
-    })
-  }
-  deleteNote=(note)=>{
-    let idx=this.state.notes.indexOf(note)
-    let newNotes=[...this.state.notes]
-    newNotes.splice(idx,1)
+
+  changeNoteProperty = (newProperties) => {
+    this.setState((prevState, _props) => ({
+      currentNote: Object.assign(prevState.currentNote, newProperties),
+    }));
+  };
+
+  addNote = (note) => {
+    const SaveableNote = { ...note };
+    const { NoteIndex } = this.state;
+    SaveableNote.id = NoteIndex;
+    this.setState((prevState, _props) => ({
+      notes: prevState.notes.concat([note]),
+      noteIndex: prevState.noteIndex + 1,
+      currentNote: SaveableNote,
+    }));
+  };
+
+  deleteNote = (note) => {
+    const { notes } = this.state;
+    const idx = notes.indexOf(note);
+    notes.splice(idx, 1);
     this.setState({
-        notes:newNotes,
-        addingNote:false,
-        currentNote:{...this.defaultNote}
-    })
-  }
-  ConfirmNoteChange=()=>{
+      notes: { ...notes },
+      addingNote: false,
+      currentNote: { ...this.defaultNote },
+    });
+  };
+
+  ConfirmNoteChange = () => {
     this.setState({
-      addingNote:false,
-      currentNote:{...this.defaultNote}
-    })
-  }
-  showAddNote=(visible)=>{
-    this.setState({addingNote:visible})
-  }
-  setEditingNote=(note)=>{
-    this.setState({currentNote:note})
-  }
-  render(){
+      addingNote: false,
+      currentNote: { ...this.defaultNote },
+    });
+  };
+
+  showAddNote = (visible) => {
+    this.setState({ addingNote: visible });
+  };
+
+  setEditingNote = (note) => {
+    this.setState({ currentNote: note });
+  };
+
+  render() {
+    const { addingNote, notes, currentNote } = this.state;
     return (
       <div>
-        <NoteList showNote={this.showAddNote} setNote={this.setEditingNote} notes={this.state.notes}></NoteList>
-        {this.state.addingNote ? <AddNote 
-          changer={this.changeNoteProperty}
-          note={this.state.currentNote}
-          noteAdd={this.addNote}
-          changeVisibility={this.showAddNote}
-          confirmNoteChange={this.ConfirmNoteChange}
-          deleteNote={this.deleteNote}
-          ></AddNote> : false}
-        <button id="add_button" onClick={()=> {this.showAddNote(true)}}>add a note</button>
+        <NoteList
+          showNote={this.showAddNote}
+          setNote={this.setEditingNote}
+          notes={notes}
+        />
+        {addingNote ? (
+          <AddNote
+            changer={this.changeNoteProperty}
+            note={currentNote}
+            noteAdd={this.addNote}
+            changeVisibility={this.showAddNote}
+            confirmNoteChange={this.ConfirmNoteChange}
+            deleteNote={this.deleteNote}
+          />
+        ) : false}
+        <button type="button" id="add_button" onClick={() => { this.showAddNote(true); }}>add a note</button>
       </div>
     );
   }
@@ -81,8 +94,8 @@ class App extends React.Component{
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App></App>
-  </React.StrictMode>
+    <App />
+  </React.StrictMode>,
 );
 
 // If you want to start measuring performance in your app, pass a function

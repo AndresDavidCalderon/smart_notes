@@ -1,31 +1,59 @@
 import React from 'react';
-import "./AddNote.css"
+import './AddNote.css';
+import PropTypes from 'prop-types';
 
 class AddNote extends React.Component {
   onNoteTextChanged = (event) => {
-    this.props.changer({ text: event.target.value })
-  }
+    const { changer } = this.props;
+    changer({ text: event.target.value });
+  };
+
   render() {
-    return <div id="add_dialogue">
-      {this.props.note.exists ? false:<button id="add_note_close" onClick={() => { this.props.changeVisibility(false) }}>close</button>}
-      <button id="note_add_confirm" onClick={() => {
-        if (this.props.note.exists) {
-          this.props.confirmNoteChange()
-        } else {
-          this.props.note.exists = true;
-          this.props.noteAdd(this.props.note);
-          this.props.changeVisibility(false);
-        }
-      }}>
-        {this.props.note.exists ? "save edits" : "save"}
-      </button>
-      <div id="note_properties">
-        <h1>Note:</h1>
-        <textarea onChange={this.onNoteTextChanged} value={this.props.note.text} id="note_edit"></textarea>
-        {this.props.note.exists ? <button onClick={()=>{this.props.deleteNote(this.props.note)}}>delete</button> : false}
+    const {
+      note, changeVisibility, confirmNoteChange, noteAdd, deleteNote,
+    } = this.props;
+    return (
+      <div id="add_dialogue">
+        {note.exists ? false : <button id="add_note_close" onClick={() => { changeVisibility(false); }} type="button">close</button>}
+        <button
+          id="note_add_confirm"
+          onClick={() => {
+            if (note.exists) {
+              confirmNoteChange();
+            } else {
+              note.exists = true;
+              noteAdd(note);
+              changeVisibility(false);
+            }
+          }}
+          type="button"
+        >
+          {note.exists ? 'save edits' : 'save'}
+        </button>
+        <div id="note_properties">
+          <h1>Note:</h1>
+          <textarea onChange={this.onNoteTextChanged} value={note.text} id="note_edit" />
+          {note.exists ? <button type="button" onClick={() => { deleteNote(note); }}>delete</button> : false}
+        </div>
       </div>
-    </div>
+    );
   }
 }
 
-export default AddNote
+const {
+  func, string, bool, shape,
+} = PropTypes;
+
+AddNote.propTypes = {
+  changer: func.isRequired,
+  confirmNoteChange: func.isRequired,
+  changeVisibility: func.isRequired,
+  noteAdd: func.isRequired,
+  deleteNote: func.isRequired,
+  note: shape({
+    text: string,
+    exists: bool,
+  }).isRequired,
+};
+
+export default AddNote;
