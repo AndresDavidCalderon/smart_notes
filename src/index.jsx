@@ -31,12 +31,12 @@ class App extends React.Component {
 
   addNote = (note) => {
     const SaveableNote = { ...note };
-    const { NoteIndex } = this.state;
-    SaveableNote.id = NoteIndex;
+    const { noteIndex } = this.state;
+    SaveableNote.id = noteIndex;
     this.setState((prevState, _props) => ({
-      notes: prevState.notes.concat([note]),
+      notes: prevState.notes.concat([SaveableNote]),
       noteIndex: prevState.noteIndex + 1,
-      currentNote: SaveableNote,
+      currentNote: { ...this.defaultNote },
     }));
   };
 
@@ -45,7 +45,7 @@ class App extends React.Component {
     const idx = notes.indexOf(note);
     notes.splice(idx, 1);
     this.setState({
-      notes: { ...notes },
+      notes: [...notes],
       addingNote: false,
       currentNote: { ...this.defaultNote },
     });

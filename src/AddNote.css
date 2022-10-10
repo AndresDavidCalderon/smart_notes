@@ -20,7 +20,6 @@
   #note_properties{
     display: flex;
     flex-direction: column;
-    margin-right: 90px;
   }
   #add_note_close{
     position: absolute;
@@ -29,7 +28,6 @@
   }
   #note_edit{
     top:25px;
-    left:10px;
     height: 150px;
   }
   

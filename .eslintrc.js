@@ -25,5 +25,11 @@ module.exports = {
         caughtErrorsIgnorePattern: '^_',
       },
     ],
+    'import/no-extraneous-dependencies': [
+      'error',
+      {
+        devDependencies: true,
+      },
+    ],
   },
 };

@@ -1,0 +1,21 @@
+#reminder_dialogue{
+    position: absolute;
+    width:80%;
+    height: 80%;
+    background-color: aquamarine;
+    left: 10%;
+    top:10%;
+    padding: 10px;
+}
+
+#add_reminder_button{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+#close_reminder_button{
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+}

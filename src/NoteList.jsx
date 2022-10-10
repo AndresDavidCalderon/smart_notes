@@ -40,15 +40,15 @@ function NoteList(props) {
   return (
     <div id="note_list">
       {
-            notes.map((note, _index) => (
-              <ListItem
-                setNote={setNote}
-                showNote={showNote}
-                note={note}
-                key={note.id}
-              />
-            ))
-        }
+        notes.map((note, _index) => (
+          <ListItem
+            setNote={setNote}
+            showNote={showNote}
+            note={note}
+            key={note.id}
+          />
+        ))
+      }
     </div>
   );
 }
