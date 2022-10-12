@@ -4,10 +4,18 @@ import PropTypes from 'prop-types';
 import ReminderDialogue from './AddReminder';
 
 class AddNote extends React.Component {
+  defaultReminder = {
+    time: '00:00',
+    unit: 0,
+    repeat_unit_amount: 1,
+    max_reminders: -1,
+  };
+
   constructor(props) {
     super(props);
     this.state = {
       addingReminder: false,
+      currentReminder: { ...this.defaultReminder },
     };
   }
 
@@ -19,6 +27,13 @@ class AddNote extends React.Component {
   newReminder = () => {
     this.setState({
       addingReminder: true,
+      currentReminder: { ...this.defaultReminder },
+    });
+  };
+
+  setReminder = (reminder) => {
+    this.setState({
+      currentReminder: reminder,
     });
   };
 
@@ -26,10 +41,15 @@ class AddNote extends React.Component {
     const {
       note, changeVisibility, confirmNoteChange, noteAdd, deleteNote,
     } = this.props;
-    const { addingReminder } = this.state;
+    const { addingReminder, currentReminder } = this.state;
     return (
       <div id="add_dialogue">
-        {addingReminder ? <ReminderDialogue /> : false}
+        {addingReminder ? (
+          <ReminderDialogue
+            reminder={currentReminder}
+            setReminder={this.setReminder}
+          />
+        ) : false}
         <button id="add_note_close" onClick={() => { changeVisibility(false); }} type="button">close</button>
         <button
           id="note_add_confirm"
@@ -51,7 +71,7 @@ class AddNote extends React.Component {
           <textarea onChange={this.onNoteTextChanged} value={note.text} id="note_edit" />
           {note.exists ? <button type="button" onClick={() => { deleteNote(note); }}>delete</button> : false}
           <h2>Reminders:</h2>
-          <button type="button" onClick={this.newReminder}>Add renminder</button>
+          <button type="button" onClick={this.newReminder}>Add reminder</button>
         </div>
       </div>
     );
