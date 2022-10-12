@@ -8,6 +8,12 @@ class ReminderDialogue extends React.Component {
     setReminder(Object.assign(reminder, source));
   };
 
+  addReminder = () => {
+    const { noteChange, note, reminder,setVisible } = this.props;
+    noteChange({ reminders: [...note.reminders, reminder] });
+    
+  };
+
   render() {
     const { reminder } = this.props;
     return (
@@ -32,14 +38,21 @@ class ReminderDialogue extends React.Component {
   }
 }
 
+const reminderShape = {
+  time: PropTypes.string,
+  unit: PropTypes.number,
+  repeat_unit_amount: PropTypes.number,
+  max_reminders: PropTypes.number,
+};
 ReminderDialogue.propTypes = {
-  reminder: PropTypes.shape({
-    time: PropTypes.string,
-    unit: PropTypes.number,
-    repeat_unit_amount: PropTypes.number,
-    max_reminders: PropTypes.number,
-  }).isRequired,
+  reminder: PropTypes.shape(reminderShape).isRequired,
   setReminder: PropTypes.func.isRequired,
+  setVisible: PropTypes.func.isRequired,
+  noteChange: PropTypes.func.isRequired,
+  note: PropTypes.shape({
+    text: PropTypes.string,
+    reminders: PropTypes.arrayOf(PropTypes.shape(reminderShape)),
+  }).isRequired,
 };
 
 export default ReminderDialogue;

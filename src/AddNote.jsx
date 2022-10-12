@@ -37,9 +37,15 @@ class AddNote extends React.Component {
     });
   };
 
+  setReminderVisible = (visible) => {
+    this.setState({
+      addingReminder: visible,
+    });
+  };
+
   render() {
     const {
-      note, changeVisibility, confirmNoteChange, noteAdd, deleteNote,
+      note, changer, changeVisibility, confirmNoteChange, noteAdd, deleteNote,
     } = this.props;
     const { addingReminder, currentReminder } = this.state;
     return (
@@ -48,6 +54,9 @@ class AddNote extends React.Component {
           <ReminderDialogue
             reminder={currentReminder}
             setReminder={this.setReminder}
+            setVisible={this.setReminderVisible}
+            noteChange={changer}
+            note={note}
           />
         ) : false}
         <button id="add_note_close" onClick={() => { changeVisibility(false); }} type="button">close</button>
@@ -91,6 +100,12 @@ AddNote.propTypes = {
   note: shape({
     text: string,
     exists: bool,
+    reminders: PropTypes.arrayOf(PropTypes.shape({
+      time: PropTypes.string,
+      unit: PropTypes.number,
+      repeat_unit_amount: PropTypes.number,
+      max_reminders: PropTypes.number,
+    })),
   }).isRequired,
 };
 
