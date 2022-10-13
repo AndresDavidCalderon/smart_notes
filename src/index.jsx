@@ -2,14 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import AddNote from './AddNote';
+import AddNote from './add_note/AddNote';
 import NoteList from './NoteList';
+
+const timeUnits = ['day', 'week', 'month', 'year'];
 
 class App extends React.Component {
   defaultNote = {
     text: '',
     exists: false,
     id: 0,
+    reminders: [],
   };
 
   constructor(props) {
@@ -83,6 +86,7 @@ class App extends React.Component {
             changeVisibility={this.showAddNote}
             confirmNoteChange={this.ConfirmNoteChange}
             deleteNote={this.deleteNote}
+            timeUnits={timeUnits}
           />
         ) : false}
         <button type="button" id="add_button" onClick={() => { this.showAddNote(true); }}>add a note</button>

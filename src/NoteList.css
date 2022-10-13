@@ -4,8 +4,11 @@
 
 #note_item{
     position: relative;
-    background-color: gray;
+    background-color: white;
+    border: 4px solid;
+    border-color: gray;
     margin-bottom: 10px;
+    border-radius: 5px;
     width: 100%;
     text-align: left;
     text-overflow: ellipsis;

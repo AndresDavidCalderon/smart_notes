@@ -2,6 +2,7 @@ import React from 'react';
 import './AddNote.css';
 import PropTypes from 'prop-types';
 import ReminderDialogue from './AddReminder';
+import ReminderItem from './ReminderItem';
 
 class AddNote extends React.Component {
   defaultReminder = {
@@ -9,6 +10,7 @@ class AddNote extends React.Component {
     unit: 0,
     repeat_unit_amount: 1,
     max_reminders: -1,
+    exists: false,
   };
 
   constructor(props) {
@@ -31,6 +33,26 @@ class AddNote extends React.Component {
     });
   };
 
+  resetReminder = () => {
+    this.setState({
+      currentReminder: { ...this.defaultReminder },
+    });
+  };
+
+  confirmReminder = () => {
+    const { note, changer } = this.props;
+    const { currentReminder } = this.state;
+    if (currentReminder.exists) {
+      const newReminders = [...note.reminders];
+      newReminders[currentReminder.id] = currentReminder;
+      changer({ reminders: newReminders });
+    } else {
+      currentReminder.id = note.reminders.length;
+      currentReminder.exists = true;
+      changer({ reminders: [...note.reminders, currentReminder] });
+    }
+  };
+
   setReminder = (reminder) => {
     this.setState({
       currentReminder: reminder,
@@ -45,7 +67,7 @@ class AddNote extends React.Component {
 
   render() {
     const {
-      note, changer, changeVisibility, confirmNoteChange, noteAdd, deleteNote,
+      timeUnits, note, changeVisibility, confirmNoteChange, noteAdd, deleteNote,
     } = this.props;
     const { addingReminder, currentReminder } = this.state;
     return (
@@ -55,8 +77,9 @@ class AddNote extends React.Component {
             reminder={currentReminder}
             setReminder={this.setReminder}
             setVisible={this.setReminderVisible}
-            noteChange={changer}
+            reset={this.resetReminder}
             note={note}
+            confirm={this.confirmReminder}
           />
         ) : false}
         <button id="add_note_close" onClick={() => { changeVisibility(false); }} type="button">close</button>
@@ -81,6 +104,15 @@ class AddNote extends React.Component {
           {note.exists ? <button type="button" onClick={() => { deleteNote(note); }}>delete</button> : false}
           <h2>Reminders:</h2>
           <button type="button" onClick={this.newReminder}>Add reminder</button>
+          {note.reminders.map((reminderObject, _reminderIndex) => (
+            <ReminderItem
+              key={reminderObject.id}
+              setReminder={this.setReminder}
+              setReminderVisible={this.setReminderVisible}
+              reminder={reminderObject}
+              timeUnits={timeUnits}
+            />
+          ))}
         </div>
       </div>
     );
@@ -105,8 +137,10 @@ AddNote.propTypes = {
       unit: PropTypes.number,
       repeat_unit_amount: PropTypes.number,
       max_reminders: PropTypes.number,
+      id: PropTypes.number,
     })),
   }).isRequired,
+  timeUnits: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default AddNote;

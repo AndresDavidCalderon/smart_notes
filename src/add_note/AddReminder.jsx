@@ -9,9 +9,17 @@ class ReminderDialogue extends React.Component {
   };
 
   addReminder = () => {
-    const { noteChange, note, reminder,setVisible } = this.props;
-    noteChange({ reminders: [...note.reminders, reminder] });
-    
+    const {
+      setVisible, confirm,
+    } = this.props;
+    confirm();
+    setVisible(false);
+  };
+
+  cancel = () => {
+    const { setVisible, reset } = this.props;
+    reset();
+    setVisible(false);
   };
 
   render() {
@@ -22,7 +30,7 @@ class ReminderDialogue extends React.Component {
         <h2>Hour</h2>
         <input value={reminder.time} onChange={(e) => { this.assignToReminder({ time: e.target.value }); }} type="time" />
         <h2>Repeat</h2>
-        <select onChange={(e) => { this.assignToReminder({ unit: e.target.value }); }}>
+        <select onChange={(e) => { this.assignToReminder({ unit: e.target.selectedIndex }); }}>
           <option>Every _ days</option>
           <option>Every _ weeks</option>
           <option>Every _ months</option>
@@ -32,7 +40,7 @@ class ReminderDialogue extends React.Component {
         <h3>amount of reminders</h3>
         <input type="number" onChange={(e) => { this.assignToReminder({ max_reminders: parseInt(e.target.value, 10) }); }} value={reminder.max_reminders} />
         <button onClick={this.addReminder} id="add_reminder_button" type="button">Add reminder</button>
-        <button onClick={this.hideDialogue} id="close_reminder_button" type="button">Cancel</button>
+        <button onClick={this.cancel} id="close_reminder_button" type="button">Cancel</button>
       </div>
     );
   }
@@ -48,11 +56,12 @@ ReminderDialogue.propTypes = {
   reminder: PropTypes.shape(reminderShape).isRequired,
   setReminder: PropTypes.func.isRequired,
   setVisible: PropTypes.func.isRequired,
-  noteChange: PropTypes.func.isRequired,
   note: PropTypes.shape({
     text: PropTypes.string,
     reminders: PropTypes.arrayOf(PropTypes.shape(reminderShape)),
   }).isRequired,
+  reset: PropTypes.func.isRequired,
+  confirm: PropTypes.func.isRequired,
 };
 
 export default ReminderDialogue;
