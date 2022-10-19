@@ -1,39 +1,41 @@
-#add_button{
-    position: fixed;
-    right: 50px;
-    bottom: 10px;
-  }
-  
-  #add_dialogue{
-    position: fixed;
-    overflow: auto;
-    padding: 10px;
-    width: 60%;
-    height: 60vh;
-    top: 50vh;
-    left: 50%;
-    margin-top: -30vh;
-    margin-left: -30vw;
-    background-color:teal;
-    border-radius: 10px;
-  }
-  #note_properties{
-    display: flex;
-    flex-direction: column;
-  }
-  #add_note_close{
-    position: absolute;
-    right: 15px;
-    top: 15px;
-  }
-  #note_edit{
-    top:25px;
-    height: 150px;
-  }
-  
-  #note_add_confirm{
-    position: absolute;
-    bottom: 15px;
-    right: 15px;
-  }
-  
+#add_button {
+  position: fixed;
+  right: 50px;
+  bottom: 10px;
+}
+
+#add_dialogue {
+  position: fixed;
+  overflow: auto;
+  padding: 10px;
+  width: 60%;
+  height: 60vh;
+  top: 50vh;
+  left: 50%;
+  margin-top: -30vh;
+  margin-left: -30vw;
+  background-color: teal;
+  border-radius: 10px;
+}
+
+#note_properties {
+  display: flex;
+  flex-direction: column;
+}
+
+#add_note_close {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+}
+
+#note_edit {
+  top: 25px;
+  height: 150px;
+}
+
+#note_add_confirm {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+}

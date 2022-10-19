@@ -1,6 +1,7 @@
 {
     "version": "0.2.0",
     "configurations": [
+
       {
         "name": "Launch Chrome against localhost",
         "type": "chrome",
@@ -9,7 +10,7 @@
         "webRoot": "${workspaceRoot}"
     },
       {
-        "name": "Debug Main Process",
+        "name": "Debug electron",
         "type": "node",
         "request": "launch",
         "cwd": "${workspaceFolder}",

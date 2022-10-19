@@ -42,6 +42,7 @@ class AddNote extends React.Component {
   confirmReminder = () => {
     const { note, changer } = this.props;
     const { currentReminder } = this.state;
+
     if (currentReminder.exists) {
       const newReminders = [...note.reminders];
       newReminders[currentReminder.id] = currentReminder;

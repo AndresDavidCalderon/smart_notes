@@ -6,6 +6,7 @@
     left: 10%;
     top:10%;
     padding: 10px;
+    overflow: auto;
 }
 
 #add_reminder_button{

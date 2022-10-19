@@ -7,6 +7,10 @@ import NoteList from './NoteList';
 
 const timeUnits = ['day', 'week', 'month', 'year'];
 
+function saveNotes(notes) {
+  window.localStorage.setItem('notes', JSON.stringify(notes));
+}
+
 class App extends React.Component {
   defaultNote = {
     text: '',
@@ -26,27 +30,45 @@ class App extends React.Component {
     this.addNote = this.addNote.bind(this);
   }
 
+  componentDidMount() {
+    if (window.localStorage.getItem('notes') != null) {
+      const newNotes = JSON.parse(window.localStorage.getItem('notes'));
+      newNotes.forEach((note) => { this.addNote(note, false); });
+    }
+  }
+
   changeNoteProperty = (newProperties) => {
     this.setState((prevState, _props) => ({
       currentNote: Object.assign(prevState.currentNote, newProperties),
     }));
   };
 
-  addNote = (note) => {
+  addNote = (note, save = true) => {
     const SaveableNote = { ...note };
-    const { noteIndex } = this.state;
+    const { noteIndex, notes } = this.state;
     SaveableNote.id = noteIndex;
+
+    if (Object.hasOwn(window, 'api')) {
+      window.api.addReminder(note.reminders, note.text);
+    }
+    if (save) {
+      saveNotes([...notes, SaveableNote]);
+    }
     this.setState((prevState, _props) => ({
       notes: prevState.notes.concat([SaveableNote]),
       noteIndex: prevState.noteIndex + 1,
       currentNote: { ...this.defaultNote },
+      addingNote: false,
     }));
   };
 
-  deleteNote = (note) => {
+  deleteNote = (note, save = true) => {
     const { notes } = this.state;
     const idx = notes.indexOf(note);
     notes.splice(idx, 1);
+    if (save) {
+      saveNotes(notes);
+    }
     this.setState({
       notes: [...notes],
       addingNote: false,
