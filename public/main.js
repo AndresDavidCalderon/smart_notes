@@ -77,3 +77,8 @@ ipcMain.on('set_reminders', (event, notes) => {
 ipcMain.on('add_note', (_event, note) => {
   addNote(note);
 });
+
+ipcMain.on('delete_reminder', (event, id) => {
+  clearTimeout(reminders[id]);
+  delete reminders[id];
+});
