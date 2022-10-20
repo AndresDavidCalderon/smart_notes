@@ -1,7 +1,8 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 const API = {
-  addReminder: (reminders, note) => ipcRenderer.send('add_reminder', reminders, note),
+  addReminder: (note) => ipcRenderer.send('add_note', note),
+  setNotes: (notes) => ipcRenderer.send('set_notes', notes),
 };
 
 contextBridge.exposeInMainWorld('api', API);

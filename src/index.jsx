@@ -32,10 +32,18 @@ class App extends React.Component {
 
   componentDidMount() {
     if (window.localStorage.getItem('notes') != null) {
-      const newNotes = JSON.parse(window.localStorage.getItem('notes'));
-      newNotes.forEach((note) => { this.addNote(note, false); });
+      this.setNotes(JSON.parse(window.localStorage.getItem('notes')));
     }
   }
+
+  setNotes = (notes) => {
+    this.setState({
+      notes,
+    });
+    if (Object.hasOwn(window, 'api')) {
+      window.api.setNotes(notes);
+    }
+  };
 
   changeNoteProperty = (newProperties) => {
     this.setState((prevState, _props) => ({
@@ -49,7 +57,7 @@ class App extends React.Component {
     SaveableNote.id = noteIndex;
 
     if (Object.hasOwn(window, 'api')) {
-      window.api.addReminder(note.reminders, note.text);
+      window.api.addNote(note);
     }
     if (save) {
       saveNotes([...notes, SaveableNote]);

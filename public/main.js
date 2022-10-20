@@ -40,19 +40,40 @@ app.on('window-all-closed', () => {
   new Notification({ title: 'smart notes is running', body: 'smart notes will keep checking for reminders' }).show();
 });
 
+const reminders = {};
+
 function remind(reminder, note) {
-  new Notification({ title: 'your reminder!', body: note }).show();
+  new Notification({ title: 'your reminder!', body: note.text }).show();
   // because they use each other
   // eslint-disable-next-line no-use-before-define
   planReminder(reminder, note);
 }
+
 function planReminder(reminder, note) {
-  setTimeout(
+  const timer = setTimeout(
     () => { remind(reminder, note); },
     getNextReminder(reminder).getTime() - (new Date()).getTime(),
   );
+  reminders[note.id] = timer;
 }
 
-ipcMain.on('add_reminder', (event, reminderList, note) => {
-  reminderList.forEach((reminder) => { planReminder(reminder, note); });
+function addNote(note) {
+  note.reminders.forEach((reminder) => {
+    planReminder(reminder, note.text);
+  });
+}
+
+// replaces all current reminders for a brand new list
+ipcMain.on('set_reminders', (event, notes) => {
+  Object.keys.forEach((key) => {
+    clearTimeout(reminders[key]);
+    delete reminders[key];
+  });
+  notes.forEach((note) => {
+    addNote(note);
+  });
+});
+
+ipcMain.on('add_note', (_event, note) => {
+  addNote(note);
 });
