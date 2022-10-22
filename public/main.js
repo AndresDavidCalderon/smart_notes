@@ -1,8 +1,8 @@
-const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
+const { argv } = require('node:process');
 
-const {
-  Notification, ipcMain, BrowserWindow, app,
-} = require('electron');
+const {installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
+
+const {Notification, ipcMain, BrowserWindow, app,} = require("electron")
 
 const { join } = require('path');
 
@@ -33,6 +33,7 @@ function getNextReminder(reminder) {
 
 app.on('ready', () => {
   CreateWindow();
+  console.log(argv);
   installExtension(REACT_DEVELOPER_TOOLS);
 });
 

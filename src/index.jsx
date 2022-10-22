@@ -77,6 +77,9 @@ class App extends React.Component {
     if (save) {
       saveNotes(notes);
     }
+    if (Object.hasOwn(window, 'api')) {
+      window.api.deleteReminder(notes.id);
+    }
     this.setState({
       notes: [...notes],
       addingNote: false,
