@@ -4,9 +4,26 @@ const {
   Notification, ipcMain, BrowserWindow, app,
 } = require('electron');
 
-const { isDev } = require('electron-is-dev');
+const { argv } = require('node:process');
 
 const path = require('path');
+
+// setting up a webserver for the renderer to access
+const staticServer = require('node-static');
+const http = require('https');
+
+if (argv[2] !== 'online') {
+  const file = new staticServer.Server('./public');
+
+  http.createServer((request, response) => {
+    request.addListener('end', () => {
+    //
+    // Serve files!
+    //
+      file.serve(request, response);
+    }).resume();
+  }).listen(8080);
+}
 
 function CreateWindow() {
   const win = new BrowserWindow({
@@ -16,11 +33,7 @@ function CreateWindow() {
       preload: path.join(__dirname, './preload.js'),
     },
   });
-  win.loadURL(
-    isDev
-      ? 'http://localhost:3000'
-      : `file://${path.join(__dirname, '../build/index.html')}`,
-  );
+  win.loadURL('http://localhost:3000');
 }
 
 app.on('ready', () => {

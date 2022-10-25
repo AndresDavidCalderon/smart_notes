@@ -18,7 +18,8 @@
         "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
       },
       "args": [
-        "."
+        ".",
+        "online"
       ],
       "outputCapture": "std"
     }
