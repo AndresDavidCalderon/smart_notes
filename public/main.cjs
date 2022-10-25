@@ -1,22 +1,34 @@
-const { argv } = require('node:process');
+const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
 
-const {installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
+const {
+  Notification, ipcMain, BrowserWindow, app,
+} = require('electron');
 
-const {Notification, ipcMain, BrowserWindow, app,} = require("electron")
+const { isDev } = require('electron-is-dev');
 
-const { join } = require('path');
+const path = require('path');
 
 function CreateWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      preload: join(__dirname, './preload.js'),
+      preload: path.join(__dirname, './preload.js'),
     },
   });
-  win.loadURL('http://localhost:3000');
+  win.loadURL(
+    isDev
+      ? 'http://localhost:3000'
+      : `file://${path.join(__dirname, '../build/index.html')}`,
+  );
 }
 
+app.on('ready', () => {
+  CreateWindow();
+  installExtension(REACT_DEVELOPER_TOOLS);
+});
+
+// start of reminder functionality
 function getNextReminder(reminder) {
   const currentDate = new Date();
   const date = new Date();
@@ -30,12 +42,6 @@ function getNextReminder(reminder) {
   }
   return date;
 }
-
-app.on('ready', () => {
-  CreateWindow();
-  console.log(argv);
-  installExtension(REACT_DEVELOPER_TOOLS);
-});
 
 app.on('window-all-closed', () => {
   new Notification({ title: 'smart notes is running', body: 'smart notes will keep checking for reminders' }).show();
