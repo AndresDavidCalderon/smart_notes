@@ -6,7 +6,8 @@
   "scripts": {
     "test": "webpack",
     "build": "webpack",
-    "start": "webpack-dev-server -d --open"
+    "start": "npx webpack serve",
+    "prestart": "webpack --mode=development"
   },
   "author": "",
   "license": "ISC",

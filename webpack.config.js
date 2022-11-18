@@ -5,7 +5,7 @@ const path = require('path');
 module.exports = {
   entry: './src/index.jsx',
   output: {
-    filename: 'bundle.[hash].js',
+    filename: 'bundle.[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
   },
   mode: 'production',
@@ -35,5 +35,8 @@ module.exports = {
     hints: false,
     maxEntrypointSize: 512000,
     maxAssetSize: 512000,
+  },
+  optimization: {
+    minimize: false,
   },
 };
