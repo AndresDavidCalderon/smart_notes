@@ -2,6 +2,9 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
+const devMode = process.env.NODE_ENV !== 'production';
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 module.exports = {
   entry: './src/index.jsx',
   output: {
@@ -21,7 +24,10 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        use: [
+          devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+          'css-loader',
+        ],
       },
     ],
   },
@@ -30,7 +36,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './public/index.html',
     }),
-  ],
+  ].concat(devMode ? [] : [new MiniCssExtractPlugin()]),
   performance: {
     hints: false,
     maxEntrypointSize: 512000,
@@ -39,4 +45,5 @@ module.exports = {
   optimization: {
     minimize: false,
   },
+  devtool: 'source-map',
 };
