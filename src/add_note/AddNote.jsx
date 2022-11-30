@@ -3,6 +3,7 @@ import './AddNote.css';
 import PropTypes from 'prop-types';
 import ReminderDialogue from './AddReminder';
 import ReminderItem from './ReminderItem';
+import TextEditor from './TextEditor';
 
 class AddNote extends React.Component {
   defaultReminder = {
@@ -20,11 +21,6 @@ class AddNote extends React.Component {
       currentReminder: { ...this.defaultReminder },
     };
   }
-
-  onNoteTextChanged = (event) => {
-    const { changer } = this.props;
-    changer({ text: event.target.value });
-  };
 
   newReminder = () => {
     this.setState({
@@ -68,7 +64,7 @@ class AddNote extends React.Component {
 
   render() {
     const {
-      timeUnits, note, changeVisibility, confirmNoteChange, noteAdd, deleteNote,
+      timeUnits, note, changeVisibility, confirmNoteChange, noteAdd, deleteNote, changer,
     } = this.props;
     const { addingReminder, currentReminder } = this.state;
     return (
@@ -83,6 +79,8 @@ class AddNote extends React.Component {
             confirm={this.confirmReminder}
           />
         ) : false}
+
+        {note.exists ? <button type="button" onClick={() => { deleteNote(note); }}>delete</button> : false}
         <button id="add_note_close" onClick={() => { changeVisibility(false); }} type="button">close</button>
         <button
           id="note_add_confirm"
@@ -102,21 +100,11 @@ class AddNote extends React.Component {
 
         <div id="note_properties">
           <h1>Note:</h1>
-          <div>
-            <label htmlFor="markdown">
-              markdown
 
-              <input type="radio" id="markdown" name="text-mode" checked />
-            </label>
-            <label htmlFor="preview" name="text-mode">
-              preview
+          <TextEditor note={note} noteChanger={changer} />
 
-              <input type="radio" id="preview" name="text-mode" />
-            </label>
-          </div>
-          <textarea onChange={this.onNoteTextChanged} value={note.text} id="note_edit" />
-          {note.exists ? <button type="button" onClick={() => { deleteNote(note); }}>delete</button> : false}
           <h2>Reminders:</h2>
+
           <button type="button" onClick={this.newReminder}>Add reminder</button>
           {note.reminders.map((reminderObject, _reminderIndex) => (
             <ReminderItem
