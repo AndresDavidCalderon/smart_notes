@@ -34,7 +34,10 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      template: './public/index.html',
+      template: './public/index.ejs',
+      templateParameters: {
+        CSP: devMode ? "default-src 'self'; style-src 'self' 'unsafe-inline';" : "default-src 'self'",
+      },
     }),
   ].concat(devMode ? [] : [new MiniCssExtractPlugin()]),
   performance: {
@@ -46,4 +49,7 @@ module.exports = {
     minimize: false,
   },
   devtool: 'source-map',
+  devServer: {
+    static: ['dist'],
+  },
 };

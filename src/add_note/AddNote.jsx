@@ -99,8 +99,21 @@ class AddNote extends React.Component {
         >
           {note.exists ? 'save edits' : 'save'}
         </button>
+
         <div id="note_properties">
           <h1>Note:</h1>
+          <div>
+            <label htmlFor="markdown">
+              markdown
+
+              <input type="radio" id="markdown" name="text-mode" checked />
+            </label>
+            <label htmlFor="preview" name="text-mode">
+              preview
+
+              <input type="radio" id="preview" name="text-mode" />
+            </label>
+          </div>
           <textarea onChange={this.onNoteTextChanged} value={note.text} id="note_edit" />
           {note.exists ? <button type="button" onClick={() => { deleteNote(note); }}>delete</button> : false}
           <h2>Reminders:</h2>

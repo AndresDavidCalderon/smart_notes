@@ -39,8 +39,8 @@ class App extends React.Component {
     this.setState({
       notes,
     });
-    if (Object.hasOwn(window, 'API')) {
-      window.API.setNotes(notes);
+    if (Object.hasOwn(window, 'api')) {
+      window.api.setNotes(notes);
     }
   };
 
@@ -55,8 +55,8 @@ class App extends React.Component {
     const { noteIndex, notes } = this.state;
     SaveableNote.id = noteIndex;
 
-    if (Object.hasOwn(window, 'API')) {
-      window.API.addNote(note);
+    if (Object.hasOwn(window, 'api')) {
+      window.api.addNote(note);
     }
     if (save) {
       saveNotes([...notes, SaveableNote]);
@@ -76,8 +76,8 @@ class App extends React.Component {
     if (save) {
       saveNotes(notes);
     }
-    if (Object.hasOwn(window, 'API')) {
-      window.API.deleteReminder(notes.id);
+    if (Object.hasOwn(window, 'api')) {
+      window.api.deleteReminder(notes.id);
     }
     this.setState({
       notes: [...notes],
