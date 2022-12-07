@@ -8,8 +8,11 @@ const path = require('path');
 const url = require('url');
 require('./Reminders.cjs');
 
+let tray;
+let window;
+
 function CreateWindow() {
-  const win = new BrowserWindow({
+  window = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -17,13 +20,13 @@ function CreateWindow() {
     },
   });
   if (process.env.NODE_ENV === 'production') {
-    win.loadURL(url.format({
+    window.loadURL(url.format({
       protocol: 'file',
       slashes: true,
       pathname: path.join(path.dirname(__dirname), 'dist', 'index.html'),
     }));
   } else {
-    win.loadURL('http://localhost:8080/');
+    window.loadURL('http://localhost:8080/');
   }
 }
 
@@ -37,11 +40,14 @@ app.on('ready', () => {
 });
 
 app.on('window-all-closed', () => {
+  window = undefined;
   new Notification({ title: 'smart notes is running', body: 'smart notes will keep checking for reminders' }).show();
-  const trayIcon = Tray(path.join(__dirname, 'OnTray.png'));
-  const contextMenu = Menu.buildFromTemplate([
-    { label: 'Open in desktop', click: CreateWindow },
-    { label: 'close smart notes', click: CloseApp },
-  ]);
-  trayIcon.setContextMenu(contextMenu);
+  if (tray === undefined) {
+    tray = Tray(path.join(__dirname, 'OnTray.png'));
+    const contextMenu = Menu.buildFromTemplate([
+      { label: 'Open in desktop', click: () => { if (window === undefined) { CreateWindow(); } else { window.moveTop(); } } },
+      { label: 'close smart notes', click: CloseApp },
+    ]);
+    tray.setContextMenu(contextMenu);
+  }
 });

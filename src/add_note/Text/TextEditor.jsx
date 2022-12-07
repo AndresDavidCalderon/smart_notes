@@ -1,6 +1,7 @@
 import React from 'react';
 
 import PropTypes from 'prop-types';
+import MarkDownEditor from './MarkDown';
 
 export default class TextEditor extends React.Component {
   constructor(props) {
@@ -10,21 +11,12 @@ export default class TextEditor extends React.Component {
     };
   }
 
-  onNoteTextChanged = (event) => {
-    const { noteChanger } = this.props;
-    noteChanger({ text: event.target.value });
-  };
-
-  onMarkdown = () => {
-    this.setState({ isMarkdown: true });
-  };
-
-  onPreview = () => {
-    this.setState({ isMarkdown: false });
+  onMarkdown = (enabled) => {
+    this.setState({ isMarkdown: enabled });
   };
 
   render() {
-    const { note } = this.props;
+    const { note, noteChanger } = this.props;
     const { isMarkdown } = this.state;
     return (
       <div>
@@ -32,16 +24,16 @@ export default class TextEditor extends React.Component {
           <label htmlFor="markdown">
             markdown
 
-            <input type="radio" id="markdown" name="text-mode" onInput={this.onMarkdown} value={isMarkdown} checked required />
+            <input type="radio" id="markdown" name="text-mode" onInput={() => { this.onMarkdown(true); }} required />
           </label>
           <label htmlFor="preview" name="text-mode">
             preview
 
-            <input type="radio" id="preview" name="text-mode" onInput={this.onPreview} value={!isMarkdown} />
+            <input type="radio" id="preview" name="text-mode" onInput={() => { this.onMarkdown(false); }} />
           </label>
         </div>
 
-        {isMarkdown ? <textarea onChange={this.onNoteTextChanged} value={note.text} id="note_edit" /> : false}
+        {isMarkdown ? <MarkDownEditor noteChanger={noteChanger} note={note} /> : false}
 
       </div>
     );

@@ -3,7 +3,7 @@ import './AddNote.css';
 import PropTypes from 'prop-types';
 import ReminderDialogue from './AddReminder';
 import ReminderItem from './ReminderItem';
-import TextEditor from './TextEditor';
+import TextEditor from './Text/TextEditor';
 
 class AddNote extends React.Component {
   defaultReminder = {
