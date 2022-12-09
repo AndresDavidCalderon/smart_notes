@@ -36,7 +36,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './public/index.ejs',
       templateParameters: {
-        CSP: devMode ? "default-src 'self'; style-src 'self' 'unsafe-inline';" : "default-src 'self'",
+        CSP: devMode ? "default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss://*.preview.app.github.dev:8080/ws;" : "default-src 'self'",
       },
     }),
   ].concat(devMode ? [] : [new MiniCssExtractPlugin()]),
@@ -51,5 +51,12 @@ module.exports = {
   devtool: 'source-map',
   devServer: {
     static: ['dist'],
+    port: 8080,
+    client: {
+      overlay: {
+        errors: false,
+        warnings: true,
+      },
+    },
   },
 };
