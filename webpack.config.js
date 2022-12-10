@@ -54,8 +54,8 @@ module.exports = {
     port: 8080,
     client: {
       overlay: {
-        errors: false,
-        warnings: true,
+        errors: true,
+        warnings: false,
       },
     },
   },
