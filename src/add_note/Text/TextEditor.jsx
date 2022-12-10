@@ -7,7 +7,7 @@ export default class TextEditor extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isMarkdown: 'markdown',
+      isMarkdown: true,
     };
   }
 
@@ -23,13 +23,12 @@ export default class TextEditor extends React.Component {
         <div>
           <label htmlFor="markdown">
             markdown
-
-            <input type="radio" id="markdown" name="text-mode" onInput={() => { this.onMarkdown(true); }} required />
+            <input type="radio" id="markdown" name="text-mode" onChange={() => { this.onMarkdown(true); }} required checked={isMarkdown ? true : null} />
           </label>
           <label htmlFor="preview" name="text-mode">
             preview
 
-            <input type="radio" id="preview" name="text-mode" onInput={() => { this.onMarkdown(false); }} />
+            <input type="radio" id="preview" name="text-mode" onChange={() => { this.onMarkdown(false); }} checked={isMarkdown ? null : true} />
           </label>
         </div>
 

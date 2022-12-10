@@ -2,6 +2,8 @@ import React from 'react';
 
 import PropTypes from 'prop-types';
 
+import './MarkDown.css';
+
 // adds enclosing to the start and the end of the selection of the given text and returns the result
 function encloseAreaWith(start, end, closing, text) {
   return (`${text.slice(0, start)}${closing}${text.slice(start, end)}${closing}${text.slice(end)}`);
