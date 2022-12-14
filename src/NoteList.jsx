@@ -1,6 +1,7 @@
 import React from 'react';
 import './NoteList.css';
 import PropTypes from 'prop-types';
+import MarkDownRender from './add_note/Text/MarkDownRender';
 
 class ListItem extends React.Component {
   showNote = () => {
@@ -17,7 +18,7 @@ class ListItem extends React.Component {
         onClick={this.showNote}
         id="note_item"
       >
-        {note.text}
+        <MarkDownRender text={note.text} />
       </button>
     );
   }

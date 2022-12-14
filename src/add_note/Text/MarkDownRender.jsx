@@ -1,20 +1,12 @@
 import PropTypes from 'prop-types';
-
-const tags = ['**', '__'];
+import { marked } from 'marked';
 
 function MarkDownRender(props) {
   const { text } = props;
   return (
-    <div id="markdown_render_background">
-      {
-        () => {
-          const children = [];
-          indexes = tags.map((tag) => {
-
-          });
-        }
-      }
-    </div>
+    // this text is user input,and it isnt loaded by any server.
+    // eslint-disable-next-line react/no-danger
+    <p dangerouslySetInnerHTML={{ __html: marked.parse(text) }} />
   );
 }
 

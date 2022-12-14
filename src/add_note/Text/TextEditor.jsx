@@ -1,7 +1,8 @@
 import React from 'react';
-
 import PropTypes from 'prop-types';
+
 import MarkDownEditor from './MarkDown';
+import MarkDownRender from './MarkDownRender';
 
 export default class TextEditor extends React.Component {
   constructor(props) {
@@ -32,7 +33,8 @@ export default class TextEditor extends React.Component {
           </label>
         </div>
 
-        {isMarkdown ? <MarkDownEditor noteChanger={noteChanger} note={note} /> : false}
+        {isMarkdown ? <MarkDownEditor noteChanger={noteChanger} note={note} />
+          : <MarkDownRender text={note.text} />}
 
       </div>
     );
