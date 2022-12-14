@@ -17,7 +17,7 @@ function getNextReminder(reminder) {
 }
 
 function remind(reminder, note) {
-  new Notification({ title: 'your reminder!', body: note.text }).show();
+  new Notification({ title: 'your reminder!', body: note.text.replaceAll('*', '') }).show();
   // because they use each other
   // eslint-disable-next-line no-use-before-define
   planReminder(reminder, note);

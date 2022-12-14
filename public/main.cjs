@@ -5,7 +5,6 @@ const {
 } = require('electron');
 
 const path = require('path');
-const url = require('url');
 require('./Reminders.cjs');
 
 let tray;
@@ -20,7 +19,7 @@ function CreateWindow() {
     },
   });
   if (process.env.NODE_ENV === 'production') {
-    window.loadURL(url.format({
+    window.loadURL(URL.format({
       protocol: 'file',
       slashes: true,
       pathname: path.join(path.dirname(__dirname), 'dist', 'index.html'),

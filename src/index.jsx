@@ -32,7 +32,14 @@ class App extends React.Component {
   componentDidMount() {
     if (window.localStorage.getItem('notes') != null) {
       this.setNotes(JSON.parse(window.localStorage.getItem('notes')));
+      if (window.localStorage.getItem('next_id') !== null) {
+        this.setState({ noteIndex: window.localStorage.getItem('next_id') });
+      }
     }
+  }
+
+  componentWillUnmount() {
+    const { noteIndex } = this.state;
   }
 
   setNotes = (notes) => {
@@ -54,6 +61,7 @@ class App extends React.Component {
     const SaveableNote = { ...note };
     const { noteIndex, notes } = this.state;
     SaveableNote.id = noteIndex;
+    window.localStorage.setItem('next_id', noteIndex + 1);
 
     if (Object.hasOwn(window, 'api')) {
       window.api.addNote(note);
@@ -87,6 +95,7 @@ class App extends React.Component {
   };
 
   ConfirmNoteChange = () => {
+    const { currentNote } = this.state;
     this.setState({
       addingNote: false,
       currentNote: { ...this.defaultNote },
