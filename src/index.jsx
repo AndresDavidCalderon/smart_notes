@@ -33,13 +33,9 @@ class App extends React.Component {
     if (window.localStorage.getItem('notes') != null) {
       this.setNotes(JSON.parse(window.localStorage.getItem('notes')));
       if (window.localStorage.getItem('next_id') !== null) {
-        this.setState({ noteIndex: window.localStorage.getItem('next_id') });
+        this.setState({ noteIndex: parseInt(window.localStorage.getItem('next_id'), 10) });
       }
     }
-  }
-
-  componentWillUnmount() {
-    const { noteIndex } = this.state;
   }
 
   setNotes = (notes) => {
@@ -64,7 +60,7 @@ class App extends React.Component {
     window.localStorage.setItem('next_id', noteIndex + 1);
 
     if (Object.hasOwn(window, 'api')) {
-      window.api.addNote(note);
+      window.api.addNote(SaveableNote);
     }
     if (save) {
       saveNotes([...notes, SaveableNote]);
@@ -85,7 +81,7 @@ class App extends React.Component {
       saveNotes(notes);
     }
     if (Object.hasOwn(window, 'api')) {
-      window.api.deleteReminder(notes.id);
+      window.api.deleteNote(note.id);
     }
     this.setState({
       notes: [...notes],
@@ -96,6 +92,10 @@ class App extends React.Component {
 
   ConfirmNoteChange = () => {
     const { currentNote } = this.state;
+    if (Object.hasOwn(window, 'api')) {
+      window.api.deleteNote(currentNote.id);
+      window.api.addNote(currentNote);
+    }
     this.setState({
       addingNote: false,
       currentNote: { ...this.defaultNote },

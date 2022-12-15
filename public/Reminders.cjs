@@ -1,5 +1,6 @@
 const { ipcMain, Notification } = require('electron');
 
+// As key it has note ID's, and as values timer ID's
 const reminders = {};
 
 function getNextReminder(reminder) {
@@ -28,31 +29,36 @@ function planReminder(reminder, note) {
     () => { remind(reminder, note); },
     getNextReminder(reminder).getTime() - (new Date()).getTime(),
   );
-  reminders[note.id] = timer;
+  reminders[note.id].push(timer);
 }
 
 function addNote(note) {
+  reminders[note.id] = [];
   note.reminders.forEach((reminder) => {
-    planReminder(reminder, note.text);
+    planReminder(reminder, note);
   });
 }
 
+function CancelRemindersOfNote(id) {
+  reminders[id].forEach((timeOutID) => {
+    clearTimeout(timeOutID);
+  });
+}
 // replaces all current reminders for a brand new list
 ipcMain.on('set_reminders', (event, notes) => {
-  Object.keys.forEach((key) => {
-    clearTimeout(reminders[key]);
-    delete reminders[key];
+  Object.keys(reminders).forEach((noteID) => {
+    CancelRemindersOfNote(noteID);
   });
   notes.forEach((note) => {
     addNote(note);
   });
 });
 
-ipcMain.on('add_note', (_event, note) => {
+ipcMain.on('add_note', (event, note) => {
   addNote(note);
 });
 
-ipcMain.on('delete_reminder', (event, id) => {
-  clearTimeout(reminders[id]);
-  delete reminders[id];
+ipcMain.on('delete_note', (event, noteID) => {
+  CancelRemindersOfNote(noteID);
+  delete reminders[noteID];
 });
