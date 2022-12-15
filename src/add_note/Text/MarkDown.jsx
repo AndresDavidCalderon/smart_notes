@@ -9,18 +9,21 @@ function encloseAreaWith(start, end, closing, text) {
   return (`${text.slice(0, start)}${closing}${text.slice(start, end)}${closing}${text.slice(end)}`);
 }
 
-function isPointEnclosed(point, text, enclosing) {
-  let index = 0;
-  let enclosed = true;
-  while (index < point) {
-    index = text.indexOf(enclosing, index);
-    index += 1;
-    enclosed = !enclosed;
-    if (index === 0) {
-      break;
+function isAreaEnclosed(start, end, text, enclosing) {
+  let index = -1;
+  let enclosed = false;
+  while (index < start) {
+    const newIndex = text.indexOf(enclosing, index);
+    if (newIndex >= start || newIndex === -1) {
+      if (enclosed) {
+        return newIndex === -1 || newIndex >= end;
+      }
+      return false;
     }
+    index = newIndex + 1;
+    enclosed = !enclosed;
   }
-  return enclosed;
+  return true;
 }
 
 export default class MarkDownEditor extends React.Component {
@@ -49,8 +52,8 @@ export default class MarkDownEditor extends React.Component {
     this.setState((_prevState, props) => ({
       selectionStart: start,
       selectionEnd: end,
-      bold: isPointEnclosed(start, props.note.text, '**'),
-      italics: isPointEnclosed(start, props.note.text, '__'),
+      bold: isAreaEnclosed(start, end, props.note.text, '**') || isAreaEnclosed(start, end, props.note.text, '***'),
+      italics: (isAreaEnclosed(start, end, props.note.text, '*') && !isAreaEnclosed(start, end, props.note.text, '**')) || isAreaEnclosed(start, end, props.note.text, '***'),
     }));
   };
 
