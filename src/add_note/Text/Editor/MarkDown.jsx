@@ -64,10 +64,16 @@ export default class MarkDownEditor extends React.Component {
 
   setBold = (_event) => {
     const { bold } = this.state;
+    const { note, noteChanger } = this.props;
+    const { selectionStart, selectionEnd } = this.state;
     if (!bold) {
-      const { note, noteChanger } = this.props;
-      const { selectionStart, selectionEnd } = this.state;
       noteChanger({ text: encloseAreaWith(selectionStart, selectionEnd, '**', note.text) });
+    } else {
+      let { text } = note;
+      if (text.substring(selectionStart - 2, selectionStart) === '**' && text.substring(selectionEnd, selectionEnd + 2) === '**') {
+        text = `${text.slice(0, selectionStart - 2)}${text.slice(selectionStart, selectionEnd)}${text.slice(selectionEnd + 2, selectionEnd + 3)}`;
+      }
+      noteChanger({ text });
     }
     this.setState((prevState, _props) => ({ bold: !prevState.bold }));
   };

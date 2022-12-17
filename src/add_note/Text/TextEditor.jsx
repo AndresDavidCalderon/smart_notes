@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import MarkDownEditor from './MarkDown';
+import MarkDownEditor from './Editor/MarkDown';
 import MarkDownRender from './MarkDownRender';
 
 export default class TextEditor extends React.Component {
