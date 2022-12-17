@@ -72,6 +72,16 @@ export default class MarkDownEditor extends React.Component {
       let { text } = note;
       if (text.substring(selectionStart - 2, selectionStart) === '**' && text.substring(selectionEnd, selectionEnd + 2) === '**') {
         text = `${text.slice(0, selectionStart - 2)}${text.slice(selectionStart, selectionEnd)}${text.slice(selectionEnd + 2, selectionEnd + 3)}`;
+      } else {
+        let closingStart = selectionStart;
+        let closingEnd = selectionEnd;
+        if (text[selectionStart - 1] === ' ') {
+          closingStart -= 1;
+        }
+        if (text[selectionEnd] === ' ') {
+          closingEnd += 1;
+        }
+        text = encloseAreaWith(closingStart, closingEnd, '**', text);
       }
       noteChanger({ text });
     }
@@ -96,11 +106,11 @@ export default class MarkDownEditor extends React.Component {
         <div>
           <label htmlFor="bold">
             <strong>B</strong>
-            <input type="checkbox" id="bold" onInput={this.setBold} checked={bold} />
+            <input type="checkbox" id="bold" onChange={this.setBold} checked={bold} />
           </label>
           <label htmlFor="italics">
             <i>I</i>
-            <input type="checkbox" id="italics" onInput={this.setItalics} checked={italics} />
+            <input type="checkbox" id="italics" onChange={this.setItalics} checked={italics} />
           </label>
         </div>
         <textarea id="markdown_area" value={note.text} onInput={this.setText} />

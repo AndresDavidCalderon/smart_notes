@@ -11,7 +11,7 @@ module.exports = {
     filename: 'bundle.[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
   },
-  mode: 'production',
+  mode: devMode ? 'development' : 'production',
   module: {
     rules: [
       {
@@ -44,9 +44,6 @@ module.exports = {
     hints: false,
     maxEntrypointSize: 512000,
     maxAssetSize: 512000,
-  },
-  optimization: {
-    minimize: false,
   },
   devtool: 'source-map',
   devServer: {
