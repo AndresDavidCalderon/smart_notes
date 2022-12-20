@@ -18,20 +18,23 @@ class ListItem extends React.Component {
         onClick={this.showNote}
         id="note_item"
       >
-        <MarkDownRender text={note.text} />
+        <MarkDownRender text={note.text} attached={note.attached} />
       </button>
     );
   }
 }
+const NoteShape = {
+  text: PropTypes.string,
+  id: PropTypes.number,
+  attached: PropTypes.arrayOf(PropTypes.string),
+};
 
 ListItem.propTypes = {
   showNote: PropTypes.func.isRequired,
   setNote: PropTypes.func.isRequired,
-  note: PropTypes.shape({
-    text: PropTypes.string,
-    id: PropTypes.number,
-    exists: PropTypes.bool,
-  }).isRequired,
+  note: PropTypes.shape(
+    NoteShape,
+  ).isRequired,
 };
 
 function NoteList(props) {
@@ -53,11 +56,6 @@ function NoteList(props) {
     </div>
   );
 }
-
-const NoteShape = {
-  text: PropTypes.string,
-  id: PropTypes.number,
-};
 
 NoteList.propTypes = {
   setNote: PropTypes.func.isRequired,

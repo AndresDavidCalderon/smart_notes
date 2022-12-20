@@ -141,6 +141,7 @@ AddNote.propTypes = {
       max_reminders: PropTypes.number,
       id: PropTypes.number,
     })),
+    attached: PropTypes.arrayOf(PropTypes.string).isRequired,
   }).isRequired,
   timeUnits: PropTypes.arrayOf(PropTypes.string).isRequired,
 };

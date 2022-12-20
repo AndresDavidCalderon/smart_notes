@@ -36,7 +36,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './public/index.ejs',
       templateParameters: {
-        CSP: devMode ? "default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss://*.preview.app.github.dev:8080/ws;" : "default-src 'self'",
+        CSP: devMode ? "default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss://*.preview.app.github.dev:8080/ws; img-src 'self' data:;" : "default-src 'self' img-src 'self' data:;",
       },
     }),
   ].concat(devMode ? [] : [new MiniCssExtractPlugin()]),

@@ -16,6 +16,7 @@ class App extends React.Component {
     exists: false,
     id: 0,
     reminders: [],
+    attached: [],
   };
 
   constructor(props) {

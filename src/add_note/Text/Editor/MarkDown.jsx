@@ -26,9 +26,28 @@ function isAreaEnclosed(start, end, text, enclosing) {
   return true;
 }
 
+function removeEffectInArea(start, end, tag, text) {
+  if (text.substring(start - tag.length, start) === tag
+  && text.substring(end, end + tag.length) === tag) {
+    return `${text.slice(0, start - tag.length)}${text.slice(start, end)}${text.slice(end + tag.length, end + tag.length + 1)}`;
+  }
+  let finalText = text;
+  let closingStart = start;
+  let closingEnd = end;
+  if (text[start - 1] === ' ') {
+    closingStart -= 1;
+  }
+  if (text[end] === ' ') {
+    closingEnd += 1;
+  }
+  finalText = encloseAreaWith(closingStart, closingEnd, tag, text);
+  return finalText;
+}
+
 export default class MarkDownEditor extends React.Component {
   constructor(props) {
     super(props);
+    this.imageAdder = React.createRef();
     this.state = {
       selectionStart: 0,
       selectionEnd: 0,
@@ -69,33 +88,37 @@ export default class MarkDownEditor extends React.Component {
     if (!bold) {
       noteChanger({ text: encloseAreaWith(selectionStart, selectionEnd, '**', note.text) });
     } else {
-      let { text } = note;
-      if (text.substring(selectionStart - 2, selectionStart) === '**' && text.substring(selectionEnd, selectionEnd + 2) === '**') {
-        text = `${text.slice(0, selectionStart - 2)}${text.slice(selectionStart, selectionEnd)}${text.slice(selectionEnd + 2, selectionEnd + 3)}`;
-      } else {
-        let closingStart = selectionStart;
-        let closingEnd = selectionEnd;
-        if (text[selectionStart - 1] === ' ') {
-          closingStart -= 1;
-        }
-        if (text[selectionEnd] === ' ') {
-          closingEnd += 1;
-        }
-        text = encloseAreaWith(closingStart, closingEnd, '**', text);
-      }
-      noteChanger({ text });
+      noteChanger({ text: removeEffectInArea(selectionStart, selectionEnd, '**', note.text) });
     }
     this.setState((prevState, _props) => ({ bold: !prevState.bold }));
   };
 
   setItalics = (_event) => {
     const { italics } = this.state;
+    const { note, noteChanger } = this.props;
+    const { selectionStart, selectionEnd } = this.state;
     if (!italics) {
-      const { note, noteChanger } = this.props;
-      const { selectionStart, selectionEnd } = this.state;
-      noteChanger({ text: encloseAreaWith(selectionStart, selectionEnd, '__', note.text) });
+      noteChanger({ text: encloseAreaWith(selectionStart, selectionEnd, '*', note.text) });
+    } else {
+      noteChanger({ text: removeEffectInArea(selectionStart, selectionEnd, '*', note.text) });
     }
     this.setState((prevState, _props) => ({ italics: !prevState.italics }));
+  };
+
+  addImageTrigger = () => {
+    this.imageAdder.current.click();
+  };
+
+  uploadImage = (event) => {
+    const { note, noteChanger } = this.props;
+    Array.from(event.target.files).forEach((image) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(image);
+      fileReader.onloadend = () => {
+        noteChanger({ attached: [...note.attached, `![uploaded image](${fileReader.result})`] });
+        noteChanger({ text: `${note.text}[attachment #${note.attached.length}]` });
+      };
+    });
   };
 
   render() {
@@ -112,6 +135,8 @@ export default class MarkDownEditor extends React.Component {
             <i>I</i>
             <input type="checkbox" id="italics" onChange={this.setItalics} checked={italics} />
           </label>
+          <button type="button" onClick={this.addImageTrigger}>add image</button>
+          <input onChange={this.uploadImage} type="file" id="add_image" accept=".png,.jpeg,.webp,.jpg" ref={this.imageAdder} hidden />
         </div>
         <textarea id="markdown_area" value={note.text} onInput={this.setText} />
       </div>
@@ -120,6 +145,9 @@ export default class MarkDownEditor extends React.Component {
 }
 
 MarkDownEditor.propTypes = {
-  note: PropTypes.shape({ text: PropTypes.string }).isRequired,
+  note: PropTypes.shape({
+    text: PropTypes.string,
+    attached: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
   noteChanger: PropTypes.func.isRequired,
 };

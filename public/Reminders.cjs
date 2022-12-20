@@ -44,6 +44,7 @@ function CancelRemindersOfNote(id) {
     clearTimeout(timeOutID);
   });
 }
+
 // replaces all current reminders for a brand new list
 ipcMain.on('set_reminders', (event, notes) => {
   Object.keys(reminders).forEach((noteID) => {

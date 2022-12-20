@@ -12,7 +12,7 @@
     width: 100%;
     text-align: left;
     text-overflow: ellipsis;
-    overflow: wrap;
+    overflow: auto;
     white-space: pre-wrap;
 }
 

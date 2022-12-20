@@ -34,7 +34,7 @@ export default class TextEditor extends React.Component {
         </div>
 
         {isMarkdown ? <MarkDownEditor noteChanger={noteChanger} note={note} />
-          : <MarkDownRender text={note.text} />}
+          : <MarkDownRender text={note.text} attached={note.attached} />}
 
       </div>
     );
@@ -45,5 +45,6 @@ TextEditor.propTypes = {
   noteChanger: PropTypes.func.isRequired,
   note: PropTypes.shape({
     text: PropTypes.string,
+    attached: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
 };
