@@ -24,5 +24,5 @@ MarkDownRender.propTypes = {
 };
 MarkDownRender.defaultProps = {
   attached: [],
-  color: 'darkgrey',
+  color: 'beige',
 };

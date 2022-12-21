@@ -46,7 +46,7 @@ function CancelRemindersOfNote(id) {
 }
 
 // replaces all current reminders for a brand new list
-ipcMain.on('set_reminders', (event, notes) => {
+ipcMain.on('set_notes', (event, notes) => {
   Object.keys(reminders).forEach((noteID) => {
     CancelRemindersOfNote(noteID);
   });

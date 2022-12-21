@@ -14,8 +14,9 @@
   left: 50%;
   margin-top: -30vh;
   margin-left: -30vw;
-  background-color: teal;
+  background-color: white;
   border-radius: 10px;
+  border:4px solid gray;
 }
 
 #note_properties {
