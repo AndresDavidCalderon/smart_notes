@@ -22,6 +22,20 @@ class AddNote extends React.Component {
     };
   }
 
+  fixMissingAttachments = () => {
+    const { note } = this.props;
+    const newAttachments = [];
+    note.attached.forEach((attachment, index) => {
+      const attachPosition = note.text.indexOf(`[attachment #${index}]`);
+      if (attachPosition !== -1) {
+        // We replace the old index with the new one.
+        note.text = `${note.text.substring(0, attachPosition)}[attachment #${newAttachments.length}]${note.text.substring(attachPosition + 15)}`;
+        newAttachments.push(attachment);
+      }
+    });
+    note.attached = newAttachments;
+  };
+
   newReminder = () => {
     this.setState({
       addingReminder: true,
@@ -86,8 +100,10 @@ class AddNote extends React.Component {
           id="note_add_confirm"
           onClick={() => {
             if (note.exists) {
+              this.fixMissingAttachments();
               confirmNoteChange();
             } else {
+              this.fixMissingAttachments();
               note.exists = true;
               noteAdd(note);
               changeVisibility(false);
