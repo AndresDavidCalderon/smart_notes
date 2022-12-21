@@ -18,7 +18,7 @@ class ListItem extends React.Component {
         onClick={this.showNote}
         id="note_item"
       >
-        <MarkDownRender text={note.text} attached={note.attached} />
+        <MarkDownRender text={note.text} attached={note.attached} color="transparent" />
       </button>
     );
   }

@@ -1,4 +1,6 @@
 #markdown_result_area{
     overflow: auto;
-    background-color: darkgrey;
+    display: block;
+    padding: 10px;
+    border-radius: 10px;
 }

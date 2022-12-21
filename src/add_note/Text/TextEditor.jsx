@@ -24,12 +24,12 @@ export default class TextEditor extends React.Component {
         <div>
           <label htmlFor="markdown">
             markdown
-            <input type="radio" id="markdown" name="text-mode" onChange={() => { this.onMarkdown(true); }} required checked={isMarkdown ? true : null} />
+            <input type="radio" id="markdown" name="text-mode" onChange={() => { this.onMarkdown(!isMarkdown); }} required checked={!isMarkdown} value="0" />
           </label>
           <label htmlFor="preview" name="text-mode">
             preview
 
-            <input type="radio" id="preview" name="text-mode" onChange={() => { this.onMarkdown(false); }} checked={isMarkdown ? null : true} />
+            <input type="radio" id="preview" name="text-mode" onChange={() => { this.onMarkdown(!isMarkdown); }} checked={isMarkdown} value="0" />
           </label>
         </div>
 

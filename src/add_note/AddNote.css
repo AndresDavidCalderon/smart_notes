@@ -1,7 +1,7 @@
 #add_button {
   position: fixed;
-  right: 50px;
-  bottom: 10px;
+  right: 20px;
+  bottom: 20px;
 }
 
 #add_dialogue {
@@ -35,7 +35,8 @@
 }
 
 #note_add_confirm {
-  position: absolute;
-  bottom: 15px;
-  right: 15px;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1;
 }
