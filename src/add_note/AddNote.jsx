@@ -59,6 +59,7 @@ class AddNote extends React.Component {
       currentReminder.id = note.nextReminderID;
       currentReminder.exists = true;
       changer({ reminders: [...note.reminders, currentReminder] });
+      note.nextReminderID += 1;
     }
   };
 
