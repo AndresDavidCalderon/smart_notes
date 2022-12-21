@@ -54,11 +54,9 @@ class AddNote extends React.Component {
     const { currentReminder } = this.state;
 
     if (currentReminder.exists) {
-      const newReminders = [...note.reminders];
-      newReminders[currentReminder.id] = currentReminder;
-      changer({ reminders: newReminders });
+      changer({ reminders: note.reminders });
     } else {
-      currentReminder.id = note.reminders.length;
+      currentReminder.id = note.nextReminderID;
       currentReminder.exists = true;
       changer({ reminders: [...note.reminders, currentReminder] });
     }
@@ -76,9 +74,22 @@ class AddNote extends React.Component {
     });
   };
 
+  cancelNote = () => {
+    const {
+      deleteNote, changer, note, defaultNote, changeVisibility,
+    } = this.props;
+    if (note.exists) {
+      deleteNote(note);
+      changeVisibility(false);
+    } else {
+      changer(defaultNote);
+      changeVisibility(false);
+    }
+  };
+
   render() {
     const {
-      timeUnits, note, changeVisibility, confirmNoteChange, noteAdd, deleteNote, changer,
+      timeUnits, note, changeVisibility, confirmNoteChange, noteAdd, changer,
     } = this.props;
     const { addingReminder, currentReminder } = this.state;
     return (
@@ -93,26 +104,26 @@ class AddNote extends React.Component {
             confirm={this.confirmReminder}
           />
         ) : false}
-
-        {note.exists ? <button type="button" onClick={() => { deleteNote(note); }}>delete</button> : false}
-        <button id="add_note_close" onClick={() => { changeVisibility(false); }} type="button">close</button>
-        <button
-          id="note_add_confirm"
-          onClick={() => {
-            if (note.exists) {
-              this.fixMissingAttachments();
-              confirmNoteChange();
-            } else {
-              this.fixMissingAttachments();
-              note.exists = true;
-              noteAdd(note);
-              changeVisibility(false);
-            }
-          }}
-          type="button"
-        >
-          {note.exists ? 'save edits' : 'save'}
-        </button>
+        <div id="draft_option_container">
+          <button className="draft_option" onClick={this.cancelNote} type="button">{note.exists ? 'delete' : 'discard'}</button>
+          <button
+            className="draft_option"
+            onClick={() => {
+              if (note.exists) {
+                this.fixMissingAttachments();
+                confirmNoteChange();
+              } else {
+                this.fixMissingAttachments();
+                note.exists = true;
+                noteAdd(note);
+                changeVisibility(false);
+              }
+            }}
+            type="button"
+          >
+            {note.exists ? 'save edits' : 'save'}
+          </button>
+        </div>
 
         <div id="note_properties">
           <h1>Note:</h1>
@@ -137,28 +148,28 @@ class AddNote extends React.Component {
   }
 }
 
-const {
-  func, string, bool, shape,
-} = PropTypes;
+const noteShape = {
+  text: PropTypes.string,
+  exists: PropTypes.bool,
+  reminders: PropTypes.arrayOf(PropTypes.shape({
+    time: PropTypes.string,
+    unit: PropTypes.number,
+    repeat_unit_amount: PropTypes.number,
+    max_reminders: PropTypes.number,
+    id: PropTypes.number,
+  })),
+  attached: PropTypes.arrayOf(PropTypes.string).isRequired,
+  nextReminderID: PropTypes.number,
+};
 
 AddNote.propTypes = {
-  changer: func.isRequired,
-  confirmNoteChange: func.isRequired,
-  changeVisibility: func.isRequired,
-  noteAdd: func.isRequired,
-  deleteNote: func.isRequired,
-  note: shape({
-    text: string,
-    exists: bool,
-    reminders: PropTypes.arrayOf(PropTypes.shape({
-      time: PropTypes.string,
-      unit: PropTypes.number,
-      repeat_unit_amount: PropTypes.number,
-      max_reminders: PropTypes.number,
-      id: PropTypes.number,
-    })),
-    attached: PropTypes.arrayOf(PropTypes.string).isRequired,
-  }).isRequired,
+  changer: PropTypes.func.isRequired,
+  confirmNoteChange: PropTypes.func.isRequired,
+  changeVisibility: PropTypes.func.isRequired,
+  noteAdd: PropTypes.func.isRequired,
+  deleteNote: PropTypes.func.isRequired,
+  defaultNote: PropTypes.shape(noteShape).isRequired,
+  note: PropTypes.shape(noteShape).isRequired,
   timeUnits: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 

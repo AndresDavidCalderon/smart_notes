@@ -17,6 +17,7 @@ class App extends React.Component {
     id: 0,
     reminders: [],
     attached: [],
+    nextReminderID: 0,
   };
 
   constructor(props) {
@@ -129,6 +130,7 @@ class App extends React.Component {
             confirmNoteChange={this.ConfirmNoteChange}
             deleteNote={this.deleteNote}
             timeUnits={timeUnits}
+            defaultNote={this.defaultNote}
           />
         ) : false}
         <button type="button" id="add_button" onClick={() => { this.showAddNote(true); }} hidden={addingNote}>add a note</button>

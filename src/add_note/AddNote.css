@@ -1,17 +1,21 @@
-#add_button {
+#draft_option_container {
   position: fixed;
   right: 20px;
   bottom: 20px;
+}
+
+.draft_option{
+  margin: 5px;
 }
 
 #add_dialogue {
   position: fixed;
   overflow: auto;
   padding: 10px;
-  width: 60%;
+  width: 60vw;
   height: 60vh;
   top: 50vh;
-  left: 50%;
+  left: 50vw;
   margin-top: -30vh;
   margin-left: -30vw;
   background-color: white;
@@ -24,11 +28,6 @@
   flex-direction: column;
 }
 
-#add_note_close {
-  position: absolute;
-  right: 15px;
-  top: 15px;
-}
 
 #note_edit {
   top: 25px;
