@@ -131,7 +131,7 @@ class App extends React.Component {
             timeUnits={timeUnits}
           />
         ) : false}
-        <button type="button" id="add_button" onClick={() => { this.showAddNote(true); }}>add a note</button>
+        <button type="button" id="add_button" onClick={() => { this.showAddNote(true); }} hidden={addingNote}>add a note</button>
       </div>
     );
   }
