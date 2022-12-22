@@ -22,6 +22,19 @@ class ReminderDialogue extends React.Component {
     setVisible(false);
   };
 
+  delete = () => {
+    const {
+      noteChanger, note, reminder, setVisible,
+    } = this.props;
+    const index = note.reminders.findIndex(
+      (comparingReminder) => comparingReminder.id === reminder.id,
+    );
+    const newReminders = [...note.reminders];
+    newReminders.splice(index, 1);
+    noteChanger({ reminders: newReminders });
+    setVisible(false);
+  };
+
   render() {
     const { reminder } = this.props;
     return (
@@ -40,7 +53,7 @@ class ReminderDialogue extends React.Component {
         <h3>amount of reminders</h3>
         <input type="number" onChange={(e) => { this.assignToReminder({ max_reminders: parseInt(e.target.value, 10) }); }} value={reminder.max_reminders} />
         <button onClick={this.addReminder} id="add_reminder_button" type="button">{reminder.exists ? 'confirm edit' : 'add reminder'}</button>
-        {reminder.exists ? false : <button onClick={this.cancel} id="close_reminder_button" type="button">Cancel</button>}
+        {reminder.exists ? <button id="close_reminder_button" type="button" onClick={this.delete}>delete</button> : <button onClick={this.cancel} id="close_reminder_button" type="button">discard</button>}
       </div>
     );
   }
@@ -62,6 +75,7 @@ ReminderDialogue.propTypes = {
   }).isRequired,
   reset: PropTypes.func.isRequired,
   confirm: PropTypes.func.isRequired,
+  noteChanger: PropTypes.func.isRequired,
 };
 
 export default ReminderDialogue;

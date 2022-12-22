@@ -21,6 +21,7 @@
   background-color: white;
   border-radius: 10px;
   border:4px solid gray;
+  resize: both;
 }
 
 #note_properties {
@@ -32,6 +33,7 @@
 #note_edit {
   top: 25px;
   height: 150px;
+  resize: vertical;
 }
 
 #note_add_confirm {

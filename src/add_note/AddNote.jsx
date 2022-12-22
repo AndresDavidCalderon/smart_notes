@@ -103,6 +103,7 @@ class AddNote extends React.Component {
             reset={this.resetReminder}
             note={note}
             confirm={this.confirmReminder}
+            noteChanger={changer}
           />
         ) : false}
         <div id="draft_option_container">
