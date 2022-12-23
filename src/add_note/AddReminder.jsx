@@ -39,7 +39,7 @@ class ReminderDialogue extends React.Component {
     const { reminder } = this.props;
     return (
       <div id="reminder_dialogue">
-        <h1>New reminder:</h1>
+        <h1>{reminder.exists ? 'Edit reminder:' : 'New reminder:'}</h1>
         <h2>Hour</h2>
         <input value={reminder.time} onChange={(e) => { this.assignToReminder({ time: e.target.value }); }} type="time" />
         <h2>Repeat</h2>

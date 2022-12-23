@@ -2,4 +2,8 @@
     position: fixed;
     right:20px;
     bottom:20px;
+    background: url("add_note_icon.png") no-repeat;
+    background-position: center;
+    width: 40px;
+    height: 40px;
 }

@@ -1,8 +1,5 @@
 #reminder_item{
-    width: 100%;
-}
-
-#edit_reminder{
-    position: absolute;
-    right: 10px;
+    width: 80%;
+    margin-left: 10%;
+    margin-top: 10px;
 }

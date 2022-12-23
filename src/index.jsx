@@ -133,7 +133,7 @@ class App extends React.Component {
             defaultNote={this.defaultNote}
           />
         ) : false}
-        <button type="button" id="add_button" onClick={() => { this.showAddNote(true); }} hidden={addingNote}>add a note</button>
+        <button type="button" id="add_button" onClick={() => { this.showAddNote(true); }} hidden={addingNote} />
       </div>
     );
   }
