@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import AddNote from './add_note/AddNote';
 import NoteList from './NoteList';
+import About from './about_app/About';
 
 const timeUnits = ['day', 'week', 'month', 'year'];
 
@@ -27,6 +28,7 @@ class App extends React.Component {
       addingNote: false,
       currentNote: { ...this.defaultNote },
       noteIndex: 0,
+      language: window.localStorage.getItem('language') === null ? navigator.language.substring(0, 2) : window.localStorage.getItem('language'),
     };
     this.addNote = this.addNote.bind(this);
   }
@@ -112,8 +114,17 @@ class App extends React.Component {
     this.setState({ currentNote: note });
   };
 
+  setLanguage = (event) => {
+    localStorage.setItem('language', event.target.selectedOptions[0].value);
+    this.setState({
+      language: event.target.selectedOptions[0].value,
+    });
+  };
+
   render() {
-    const { addingNote, notes, currentNote } = this.state;
+    const {
+      addingNote, notes, currentNote, language,
+    } = this.state;
     return (
       <div>
         <NoteList
@@ -131,9 +142,15 @@ class App extends React.Component {
             deleteNote={this.deleteNote}
             timeUnits={timeUnits}
             defaultNote={this.defaultNote}
+            language={language}
           />
         ) : false}
-        <button type="button" id="add_button" onClick={() => { this.showAddNote(true); }} hidden={addingNote} />
+        <button type="button" aria-label="add note" id="add_button" onClick={() => { this.showAddNote(true); }} hidden={addingNote} />
+        <About />
+        <select id="language_selector" onChange={this.setLanguage} defaultValue>
+          <option value="en">English</option>
+          <option value="es">Español</option>
+        </select>
       </div>
     );
   }
