@@ -5,6 +5,33 @@ import ReminderDialogue from './AddReminder';
 import ReminderItem from './ReminderItem';
 import TextEditor from './Text/TextEditor';
 
+const text = {
+  title: {
+    en: 'Note:',
+    es: 'Nota:',
+  },
+  cancelNote: {
+    true: {
+      en: 'delete note',
+      es: 'eliminar nota',
+    },
+    false: {
+      en: 'delete draft',
+      es: 'descartar borrador',
+    },
+  },
+  reminders: {
+    title: {
+      en: 'Reminders:',
+      es: 'Recordatiorios:',
+    },
+    add: {
+      en: 'add reminder',
+      es: 'añadir recordatorio',
+    },
+  },
+};
+
 class AddNote extends React.Component {
   defaultReminder = {
     time: '00:00',
@@ -20,6 +47,30 @@ class AddNote extends React.Component {
       addingReminder: false,
       currentReminder: { ...this.defaultReminder },
     };
+  }
+
+  getConfirmationText() {
+    const { language, note } = this.props;
+    switch (language) {
+      case 'en':
+        return note.exists ? 'save edits' : 'save';
+      case 'es':
+        return note.exists ? 'terminar edición' : 'guardar';
+      default:
+        return 'save';
+    }
+  }
+
+  getCancelText() {
+    const { language, note } = this.props;
+    switch (language) {
+      case 'en':
+        return note.exists ? 'delete' : 'erase draft';
+      case 'es':
+        return note.exists ? 'eliminar' : 'borrar borrador';
+      default:
+        return 'save';
+    }
   }
 
   fixMissingAttachments = () => {
@@ -90,7 +141,7 @@ class AddNote extends React.Component {
 
   render() {
     const {
-      timeUnits, note, changeVisibility, confirmNoteChange, noteAdd, changer,
+      timeUnits, note, changeVisibility, confirmNoteChange, noteAdd, changer, language,
     } = this.props;
     const { addingReminder, currentReminder } = this.state;
     return (
@@ -107,7 +158,7 @@ class AddNote extends React.Component {
           />
         ) : false}
         <div id="draft_option_container">
-          <button className="draft_option" onClick={this.cancelNote} type="button">{note.exists ? 'delete' : 'discard'}</button>
+          <button className="draft_option" onClick={this.cancelNote} type="button">{this.getCancelText()}</button>
           <button
             className="draft_option"
             onClick={() => {
@@ -123,18 +174,18 @@ class AddNote extends React.Component {
             }}
             type="button"
           >
-            {note.exists ? 'save edits' : 'save'}
+            {this.getConfirmationText()}
           </button>
         </div>
 
         <div id="note_properties">
-          <h1>Note:</h1>
+          <h1>{text.title[language]}</h1>
 
-          <TextEditor note={note} noteChanger={changer} />
+          <TextEditor note={note} noteChanger={changer} language={language} />
 
-          <h2>Reminders:</h2>
+          {note.reminders.length > 0 ? <h2>{text.reminders.title[language]}</h2> : false}
 
-          <button type="button" onClick={this.newReminder}>Add reminder</button>
+          <button type="button" onClick={this.newReminder}>{text.reminders.add[language]}</button>
           {note.reminders.map((reminderObject, _reminderIndex) => (
             <ReminderItem
               key={reminderObject.id}
@@ -173,6 +224,7 @@ AddNote.propTypes = {
   defaultNote: PropTypes.shape(noteShape).isRequired,
   note: PropTypes.shape(noteShape).isRequired,
   timeUnits: PropTypes.arrayOf(PropTypes.string).isRequired,
+  language: PropTypes.string.isRequired,
 };
 
 export default AddNote;

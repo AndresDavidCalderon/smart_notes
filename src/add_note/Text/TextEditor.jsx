@@ -4,6 +4,13 @@ import PropTypes from 'prop-types';
 import MarkDownEditor from './Editor/MarkDown';
 import MarkDownRender from './MarkDownRender';
 
+const text = {
+  preview: {
+    en: 'preview',
+    es: 'vista previa',
+  },
+};
+
 export default class TextEditor extends React.Component {
   constructor(props) {
     super(props);
@@ -17,7 +24,7 @@ export default class TextEditor extends React.Component {
   };
 
   render() {
-    const { note, noteChanger } = this.props;
+    const { note, noteChanger, language } = this.props;
     const { isMarkdown } = this.state;
     return (
       <div>
@@ -27,12 +34,12 @@ export default class TextEditor extends React.Component {
             <input type="radio" id="markdown" name="text-mode" onChange={() => { this.onMarkdown(!isMarkdown); }} required checked={isMarkdown} value="0" />
           </label>
           <label htmlFor="preview" name="text-mode">
-            preview
+            {text.preview[language]}
             <input type="radio" id="preview" name="text-mode" onChange={() => { this.onMarkdown(!isMarkdown); }} checked={!isMarkdown} value="0" />
           </label>
         </div>
 
-        {isMarkdown ? <MarkDownEditor noteChanger={noteChanger} note={note} />
+        {isMarkdown ? <MarkDownEditor noteChanger={noteChanger} note={note} language={language} />
           : <MarkDownRender text={note.text} attached={note.attached} />}
 
       </div>
@@ -46,4 +53,5 @@ TextEditor.propTypes = {
     text: PropTypes.string,
     attached: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
+  language: PropTypes.string.isRequired,
 };

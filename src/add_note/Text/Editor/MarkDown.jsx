@@ -4,6 +4,23 @@ import PropTypes from 'prop-types';
 
 import './MarkDown.css';
 
+const localText = {
+  tools: {
+    bold: {
+      en: 'B',
+      es: 'N',
+    },
+    italics: {
+      en: 'I',
+      es: 'I',
+    },
+    image: {
+      en: 'add image',
+      es: 'insertar imagen',
+    },
+  },
+};
+
 // adds enclosing to the start and the end of the selection of the given text and returns the result
 function encloseAreaWith(start, end, closing, text) {
   return (`${text.slice(0, start)}${closing}${text.slice(start, end)}${closing}${text.slice(end)}`);
@@ -122,20 +139,20 @@ export default class MarkDownEditor extends React.Component {
   };
 
   render() {
-    const { note } = this.props;
+    const { note, language } = this.props;
     const { bold, italics } = this.state;
     return (
       <div>
         <div>
           <label htmlFor="bold">
-            <strong>B</strong>
+            <strong>{localText.tools.bold[language]}</strong>
             <input type="checkbox" id="bold" onChange={this.setBold} checked={bold} />
           </label>
           <label htmlFor="italics">
-            <i>I</i>
+            <i>{localText.tools.italics[language]}</i>
             <input type="checkbox" id="italics" onChange={this.setItalics} checked={italics} />
           </label>
-          <button type="button" onClick={this.addImageTrigger}>add image</button>
+          <button type="button" onClick={this.addImageTrigger}>{localText.tools.image[language]}</button>
           <input onChange={this.uploadImage} type="file" id="add_image" accept=".png,.jpeg,.webp,.jpg" ref={this.imageAdder} hidden />
         </div>
         <textarea id="markdown_area" value={note.text} onInput={this.setText} />
@@ -150,4 +167,5 @@ MarkDownEditor.propTypes = {
     attached: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   noteChanger: PropTypes.func.isRequired,
+  language: PropTypes.string.isRequired,
 };
