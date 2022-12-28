@@ -6,7 +6,24 @@ import NoteList from './NoteList';
 import About from './about_app/About';
 
 const timeUnits = ['day', 'week', 'month', 'year'];
-
+const localTimeUnits = [
+  {
+    en: 'day',
+    es: 'dìa',
+  },
+  {
+    en: 'week',
+    es: 'semana',
+  },
+  {
+    en: 'month',
+    es: 'mes',
+  },
+  {
+    en: 'year',
+    es: 'año',
+  },
+];
 function saveNotes(notes) {
   window.localStorage.setItem('notes', JSON.stringify(notes));
 }
@@ -141,6 +158,7 @@ class App extends React.Component {
             confirmNoteChange={this.ConfirmNoteChange}
             deleteNote={this.deleteNote}
             timeUnits={timeUnits}
+            localTimeUnits={localTimeUnits}
             defaultNote={this.defaultNote}
             language={language}
           />

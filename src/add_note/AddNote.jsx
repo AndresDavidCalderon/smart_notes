@@ -141,7 +141,8 @@ class AddNote extends React.Component {
 
   render() {
     const {
-      timeUnits, note, changeVisibility, confirmNoteChange, noteAdd, changer, language,
+      timeUnits, localTimeUnits, note, changeVisibility,
+      confirmNoteChange, noteAdd, changer, language,
     } = this.props;
     const { addingReminder, currentReminder } = this.state;
     return (
@@ -193,6 +194,8 @@ class AddNote extends React.Component {
               setReminderVisible={this.setReminderVisible}
               reminder={reminderObject}
               timeUnits={timeUnits}
+              localTimeUnits={localTimeUnits}
+              language={language}
             />
           ))}
         </div>
@@ -224,6 +227,10 @@ AddNote.propTypes = {
   defaultNote: PropTypes.shape(noteShape).isRequired,
   note: PropTypes.shape(noteShape).isRequired,
   timeUnits: PropTypes.arrayOf(PropTypes.string).isRequired,
+  localTimeUnits: PropTypes.arrayOf(PropTypes.shape({
+    en: PropTypes.string,
+    es: PropTypes.string,
+  })).isRequired,
   language: PropTypes.string.isRequired,
 };
 
