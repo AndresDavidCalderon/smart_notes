@@ -156,6 +156,8 @@ class AddNote extends React.Component {
             note={note}
             confirm={this.confirmReminder}
             noteChanger={changer}
+            localTimeUnits={localTimeUnits}
+            language={language}
           />
         ) : false}
         <div id="draft_option_container">

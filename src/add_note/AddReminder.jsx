@@ -2,6 +2,21 @@ import React from 'react';
 import './AddReminder.css';
 import PropTypes from 'prop-types';
 
+const text = {
+  at: {
+    en: 'at',
+    es: 'a las',
+  },
+  repeat: {
+    en: 'every',
+    es: 'cada',
+  },
+  times: {
+    en: 'times',
+    es: 'veces',
+  },
+};
+
 class ReminderDialogue extends React.Component {
   assignToReminder = (source) => {
     const { reminder, setReminder } = this.props;
@@ -36,24 +51,30 @@ class ReminderDialogue extends React.Component {
   };
 
   render() {
-    const { reminder } = this.props;
+    const { reminder, localTimeUnits, language } = this.props;
     return (
       <div id="reminder_dialogue">
-        <h1>{reminder.exists ? 'Edit reminder:' : 'New reminder:'}</h1>
-        <h2>Hour</h2>
+        <span className="clue">{text.at[language]}</span>
         <input value={reminder.time} onChange={(e) => { this.assignToReminder({ time: e.target.value }); }} type="time" />
-        <h2>Repeat</h2>
+        <br />
+        <span className="clue">{text.repeat[language]}</span>
+        <input id="repeat_multiplier" min={1} value={reminder.repeat_unit_amount} onChange={(e) => { this.assignToReminder({ repeat_unit_amount: parseInt(e.target.value, 10) }); }} type="number" placeholder="_" size={2} />
         <select onChange={(e) => { this.assignToReminder({ unit: e.target.selectedIndex }); }}>
-          <option>Every _ days</option>
-          <option>Every _ weeks</option>
-          <option>Every _ months</option>
-          <option>Every _ years</option>
+          {localTimeUnits.map((timeUnit) => (
+            <option
+              key={timeUnit[language]}
+            >
+              {timeUnit[language]}
+            </option>
+          ))}
         </select>
-        <input value={reminder.repeat_unit_amount} onChange={(e) => { this.assignToReminder({ repeat_unit_amount: parseInt(e.target.value, 10) }); }} type="number" placeholder="_" size={2} />
-        <h3>amount of reminders</h3>
-        <input type="number" onChange={(e) => { this.assignToReminder({ max_reminders: parseInt(e.target.value, 10) }); }} value={reminder.max_reminders} />
-        <button onClick={this.addReminder} id="add_reminder_button" type="button">{reminder.exists ? 'confirm edit' : 'add reminder'}</button>
-        {reminder.exists ? <button id="close_reminder_button" type="button" onClick={this.delete}>delete</button> : <button onClick={this.cancel} id="close_reminder_button" type="button">discard</button>}
+
+        <br />
+        <input id="repeat_times" type="number" onChange={(e) => { this.assignToReminder({ max_reminders: parseInt(e.target.value, 10) }); }} min="-1" value={reminder.max_reminders} />
+        <span className="clue">{text.times[language]}</span>
+
+        <button onClick={this.addReminder} id="add_reminder_button" type="button" aria-label="done" />
+        {reminder.exists ? <button id="delete" className="close_reminder_button" type="button" aria-label="delete" onClick={this.delete} /> : <button id="cancel" onClick={this.cancel} className="close_reminder_button" type="button" aria-label="cancel draft" />}
       </div>
     );
   }
@@ -76,6 +97,10 @@ ReminderDialogue.propTypes = {
   reset: PropTypes.func.isRequired,
   confirm: PropTypes.func.isRequired,
   noteChanger: PropTypes.func.isRequired,
+  localTimeUnits: PropTypes.arrayOf(PropTypes.shape(
+    { en: PropTypes.string, es: PropTypes.string },
+  )).isRequired,
+  language: PropTypes.string.isRequired,
 };
 
 export default ReminderDialogue;
