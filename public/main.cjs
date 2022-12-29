@@ -10,6 +10,8 @@ require('./Reminders.cjs');
 let tray;
 let window;
 
+if (require('electron-squirrel-startup')) app.quit();
+
 function CreateWindow() {
   window = new BrowserWindow({
     width: 800,
