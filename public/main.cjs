@@ -10,10 +10,9 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const {
-  Notification, BrowserWindow, app, Tray, Menu,
+  Notification, BrowserWindow, app, Tray, Menu, Shell,
 } = require('electron');
 
-const url = require('url');
 const path = require('path');
 const squirrelStartup = require('electron-squirrel-startup');
 
@@ -33,14 +32,15 @@ function CreateWindow() {
     },
   });
   if (process.env.NODE_ENV !== 'development') {
-    window.loadURL(url.format({
-      protocol: 'file',
-      slashes: true,
-      pathname: path.join(path.dirname(__dirname), 'dist', 'index.html'),
-    }));
+    window.loadURL(new URL(path.join(path.dirname(__dirname), 'dist', 'index.html'), 'file://').toString());
   } else {
     window.loadURL('http://localhost:8080/');
   }
+
+  window.webContents.setWindowOpenHandler(({ url }) => {
+    Shell.openExternal(url);
+    return { action: 'allow' };
+  });
 }
 
 function CloseApp() {

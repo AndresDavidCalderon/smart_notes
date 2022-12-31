@@ -2,6 +2,8 @@ import React from 'react';
 
 import PropTypes from 'prop-types';
 
+import LinkAdder from './Link';
+
 import './MarkDown.css';
 
 const localText = {
@@ -139,7 +141,7 @@ export default class MarkDownEditor extends React.Component {
   };
 
   render() {
-    const { note, language } = this.props;
+    const { note, noteChanger, language } = this.props;
     const { bold, italics } = this.state;
     return (
       <div>
@@ -152,6 +154,7 @@ export default class MarkDownEditor extends React.Component {
             <i>{localText.tools.italics[language]}</i>
             <input type="checkbox" id="italics" onChange={this.setItalics} checked={italics} />
           </label>
+          <LinkAdder noteChanger={noteChanger} note={note} />
           <button type="button" onClick={this.addImageTrigger}>{localText.tools.image[language]}</button>
           <input onChange={this.uploadImage} type="file" id="add_image" accept=".png,.jpeg,.webp,.jpg" ref={this.imageAdder} hidden />
         </div>

@@ -72,9 +72,10 @@ class ReminderDialogue extends React.Component {
         <br />
         <input id="repeat_times" type="number" onChange={(e) => { this.assignToReminder({ max_reminders: parseInt(e.target.value, 10) }); }} min="-1" value={reminder.max_reminders} />
         <span className="clue">{text.times[language]}</span>
-
-        <button onClick={this.addReminder} id="add_reminder_button" type="button" aria-label="done" />
-        {reminder.exists ? <button id="delete" className="close_reminder_button" type="button" aria-label="delete" onClick={this.delete} /> : <button id="cancel" onClick={this.cancel} className="close_reminder_button" type="button" aria-label="cancel draft" />}
+        <div id="confirmations">
+          <button onClick={this.addReminder} id="add_reminder_button" type="button" aria-label="done" />
+          {reminder.exists ? <button id="delete" className="close_reminder_button" type="button" aria-label="delete" onClick={this.delete} /> : <button id="cancel" onClick={this.cancel} className="close_reminder_button" type="button" aria-label="cancel draft" />}
+        </div>
       </div>
     );
   }

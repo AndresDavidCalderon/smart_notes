@@ -26,10 +26,15 @@
     width: 30px;
 }
 
+#confirmations{
+    position: absolute;
+    left: 50%;
+    bottom: 50px;
+}
+
 #add_reminder_button{
     position: absolute;
-    left: 40%;
-    bottom: 10px;
+    left: 10px;
     width: 40px;
     height: 40px;
     background: url("done.png") no-repeat;
@@ -38,8 +43,6 @@
 
 .close_reminder_button{
     position: absolute;
-    right: 40%;
-    bottom: 10px; 
     width: 40px;
     height: 40px;
     background-position: center;
@@ -47,8 +50,10 @@
 
 #cancel{
     background: url(cancel.png) no-repeat;
+    right: 10px;
 }
 
 #delete{
     background: url(delete.png) no-repeat;
+    right: 10px;
 }
