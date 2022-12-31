@@ -1,16 +1,28 @@
-const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
+let REACT_DEVELOPER_TOOLS;
+let installExtension;
+
+require('dotenv').config();
+
+const devtoolsInstaller = process.env.NODE_ENV === 'development' ? require('electron-devtools-installer') : undefined;
+
+if (process.env.NODE_ENV === 'development') {
+  ({ default: installExtension, REACT_DEVELOPER_TOOLS } = devtoolsInstaller);
+}
 
 const {
   Notification, BrowserWindow, app, Tray, Menu,
 } = require('electron');
 
+const url = require('url');
 const path = require('path');
-require('./Reminders.cjs');
+const squirrelStartup = require('electron-squirrel-startup');
+
+if (squirrelStartup) app.quit();
 
 let tray;
 let window;
 
-if (require('electron-squirrel-startup')) app.quit();
+require('./Reminders.cjs');
 
 function CreateWindow() {
   window = new BrowserWindow({
@@ -20,8 +32,8 @@ function CreateWindow() {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
-  if (process.env.NODE_ENV === 'production') {
-    window.loadURL(URL.format({
+  if (process.env.NODE_ENV !== 'development') {
+    window.loadURL(url.format({
       protocol: 'file',
       slashes: true,
       pathname: path.join(path.dirname(__dirname), 'dist', 'index.html'),
@@ -37,7 +49,9 @@ function CloseApp() {
 
 app.on('ready', () => {
   CreateWindow();
-  installExtension(REACT_DEVELOPER_TOOLS);
+  if (devtoolsInstaller !== undefined) {
+    installExtension(REACT_DEVELOPER_TOOLS);
+  }
 });
 
 app.on('window-all-closed', () => {
