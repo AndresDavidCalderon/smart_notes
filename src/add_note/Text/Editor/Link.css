@@ -20,3 +20,7 @@
     height: 32px;
     background: url("../../done.png") no-repeat center;
 }
+
+#add_link{
+    display: inline;
+}

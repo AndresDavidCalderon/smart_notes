@@ -35,6 +35,7 @@ class App extends React.Component {
     id: 0,
     reminders: [],
     attached: [],
+    placeholders: [],
     nextReminderID: 0,
   };
 

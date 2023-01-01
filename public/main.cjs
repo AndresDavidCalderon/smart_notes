@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const {
-  Notification, BrowserWindow, app, Tray, Menu, Shell,
+  Notification, BrowserWindow, app, Tray, Menu, shell,
 } = require('electron');
 
 const path = require('path');
@@ -38,8 +38,8 @@ function CreateWindow() {
   }
 
   window.webContents.setWindowOpenHandler(({ url }) => {
-    Shell.openExternal(url);
-    return { action: 'allow' };
+    shell.openExternal(url);
+    return { action: 'deny' };
   });
 }
 

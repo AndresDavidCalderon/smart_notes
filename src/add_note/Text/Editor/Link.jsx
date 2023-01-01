@@ -29,13 +29,16 @@ class LinkAdder extends React.Component {
   addLink = () => {
     const { note, noteChanger } = this.props;
     const { linkAdress, linkText } = this.state;
-    noteChanger({ text: `${note.text}[${linkText}]([attachment #${note.attached.length}])`, attached: note.attached.concat(linkAdress) });
+    const newPlaceholders = { ...note.placeholders };
+    newPlaceholders[linkText] = `<a href=${linkAdress} target="_blank">${linkText}</a>`;
+    noteChanger({ text: `[${linkText}]`, placeholders: newPlaceholders });
+    this.setState({ addingLink: false });
   };
 
   render() {
     const { linkAdress, linkText, addingLink } = this.state;
     return (
-      <div>
+      <div id="add_link">
         <button type="button" onClick={this.toggleLink}>
           add link
         </button>
@@ -54,6 +57,7 @@ LinkAdder.propTypes = {
   note: PropTypes.shape({
     text: PropTypes.string,
     attached: PropTypes.arrayOf(PropTypes.string),
+    placeholders: PropTypes.objectOf(PropTypes.string),
   }).isRequired,
   noteChanger: PropTypes.func.isRequired,
 };

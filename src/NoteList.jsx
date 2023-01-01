@@ -18,7 +18,7 @@ class ListItem extends React.Component {
         onClick={this.showNote}
         id="note_item"
       >
-        <MarkDownRender text={note.text} attached={note.attached} color="transparent" />
+        <MarkDownRender text={note.text} attached={note.attached} placeholders={note.placeholders} color="transparent" />
       </button>
     );
   }
@@ -27,6 +27,7 @@ const NoteShape = {
   text: PropTypes.string,
   id: PropTypes.number,
   attached: PropTypes.arrayOf(PropTypes.string),
+  placeholders: PropTypes.objectOf(PropTypes.string),
 };
 
 ListItem.propTypes = {
