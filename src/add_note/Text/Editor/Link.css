@@ -12,15 +12,36 @@
     text-align: center;
 }
 
+#close_link_options{
+    position: absolute;
+    bottom: 40px;
+    right: 50%;
+}
+
 #link_done{
     position: absolute;
-    bottom: 10px;
-    right: calc(50% - 16px);
+    left: 10px;
     width: 32px;
     height: 32px;
     background: url("../../done.png") no-repeat center;
 }
 
+
+#cancel_link{
+    position: absolute;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    background: url("../../cancel.png") no-repeat center;
+}
+
 #add_link{
     display: inline;
+}
+
+#add_link_opener{
+    margin: 4px;
+    width: 32px;
+    height: 32px;
+    background: url("add_link.png") no-repeat center;
 }

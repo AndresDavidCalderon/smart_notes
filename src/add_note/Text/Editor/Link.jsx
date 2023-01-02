@@ -30,23 +30,32 @@ class LinkAdder extends React.Component {
     const { note, noteChanger } = this.props;
     const { linkAdress, linkText } = this.state;
     const newPlaceholders = { ...note.placeholders };
-    newPlaceholders[linkText] = `<a href=${linkAdress} target="_blank">${linkText}</a>`;
-    noteChanger({ text: `[${linkText}]`, placeholders: newPlaceholders });
-    this.setState({ addingLink: false });
+    newPlaceholders[linkText] = `<a href="${linkAdress}" target="_blank">${linkText}</a>`;
+    noteChanger({ text: `${note.text}[${linkText}]`, placeholders: newPlaceholders });
+    this.setState({ addingLink: false, linkText: '', linkAdress: '' });
+  };
+
+  cancelLink = () => {
+    this.setState({
+      linkAdress: '',
+      linkText: '',
+      addingLink: false,
+    });
   };
 
   render() {
     const { linkAdress, linkText, addingLink } = this.state;
     return (
       <div id="add_link">
-        <button type="button" onClick={this.toggleLink}>
-          add link
-        </button>
+        <button id="add_link_opener" aria-label="add_link" type="button" onClick={this.toggleLink} />
 
         <div id="link_dialogue" hidden={!addingLink}>
           <textarea placeholder="Link adress" onChange={this.setLinkAdress} value={linkAdress} />
           <textarea placeholder="visible text" onChange={this.setLinkText} value={linkText} />
-          <button id="link_done" type="button" aria-label="add link" onClick={this.addLink} />
+          <div id="close_link_options">
+            <button id="link_done" type="button" aria-label="add link" onClick={this.addLink} />
+            <button id="cancel_link" type="button" aria-label="cancel link" onClick={this.cancelLink} />
+          </div>
         </div>
       </div>
     );

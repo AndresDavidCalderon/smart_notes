@@ -6,10 +6,6 @@ import ReminderItem from './ReminderItem';
 import TextEditor from './Text/TextEditor';
 
 const text = {
-  title: {
-    en: 'Note:',
-    es: 'Nota:',
-  },
   cancelNote: {
     true: {
       en: 'delete note',
@@ -49,30 +45,6 @@ class AddNote extends React.Component {
     };
   }
 
-  getConfirmationText() {
-    const { language, note } = this.props;
-    switch (language) {
-      case 'en':
-        return note.exists ? 'save edits' : 'save';
-      case 'es':
-        return note.exists ? 'terminar edición' : 'guardar';
-      default:
-        return 'save';
-    }
-  }
-
-  getCancelText() {
-    const { language, note } = this.props;
-    switch (language) {
-      case 'en':
-        return note.exists ? 'delete' : 'erase draft';
-      case 'es':
-        return note.exists ? 'eliminar' : 'borrar borrador';
-      default:
-        return 'save';
-    }
-  }
-
   fixMissingAttachments = () => {
     const { note } = this.props;
     const newAttachments = [];
@@ -82,6 +54,11 @@ class AddNote extends React.Component {
         // We replace the old index with the new one.
         note.text = `${note.text.substring(0, attachPosition)}[attachment #${newAttachments.length}]${note.text.substring(attachPosition + 15)}`;
         newAttachments.push(attachment);
+      }
+    });
+    Object.keys(note.placeholders).forEach((placeholder) => {
+      if (note.text.indexOf(placeholder) === -1) {
+        delete note.placeholders[placeholder];
       }
     });
     note.attached = newAttachments;
@@ -128,15 +105,16 @@ class AddNote extends React.Component {
 
   cancelNote = () => {
     const {
-      deleteNote, changer, note, defaultNote, changeVisibility,
+      changer, defaultNote, changeVisibility,
     } = this.props;
-    if (note.exists) {
-      deleteNote(note);
-      changeVisibility(false);
-    } else {
-      changer(defaultNote);
-      changeVisibility(false);
-    }
+    changer(defaultNote);
+    changeVisibility(false);
+  };
+
+  deleteNote = () => {
+    const { deleteNote, changeVisibility, note } = this.props;
+    deleteNote(note);
+    changeVisibility(false);
   };
 
   render() {
@@ -161,9 +139,11 @@ class AddNote extends React.Component {
           />
         ) : false}
         <div id="draft_option_container">
-          <button className="draft_option" onClick={this.cancelNote} type="button">{this.getCancelText()}</button>
+          {note.exists ? <button id="delete_note" className="draft_option" onClick={this.deleteNote} type="button" aria-label="cancel draft" />
+            : <button className="draft_option" type="button" id="delete_draft" aria-label="erase draft" onClick={this.cancelNote} />}
           <button
             className="draft_option"
+            id="confirm_note"
             onClick={() => {
               if (note.exists) {
                 this.fixMissingAttachments();
@@ -176,13 +156,11 @@ class AddNote extends React.Component {
               }
             }}
             type="button"
-          >
-            {this.getConfirmationText()}
-          </button>
+            aria-label="confirm changes"
+          />
         </div>
 
         <div id="note_properties">
-          <h1>{text.title[language]}</h1>
 
           <TextEditor note={note} noteChanger={changer} language={language} />
 

@@ -35,7 +35,7 @@ class App extends React.Component {
     id: 0,
     reminders: [],
     attached: [],
-    placeholders: [],
+    placeholders: {},
     nextReminderID: 0,
   };
 
@@ -113,7 +113,7 @@ class App extends React.Component {
   };
 
   ConfirmNoteChange = () => {
-    const { currentNote } = this.state;
+    const { currentNote, notes } = this.state;
     if (Object.hasOwn(window, 'api')) {
       window.api.deleteNote(currentNote.id);
       window.api.addNote(currentNote);
@@ -122,6 +122,7 @@ class App extends React.Component {
       addingNote: false,
       currentNote: { ...this.defaultNote },
     });
+    saveNotes(notes);
   };
 
   showAddNote = (visible) => {

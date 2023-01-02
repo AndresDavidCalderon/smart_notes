@@ -16,10 +16,6 @@ const localText = {
       en: 'I',
       es: 'I',
     },
-    image: {
-      en: 'add image',
-      es: 'insertar imagen',
-    },
   },
 };
 
@@ -155,7 +151,7 @@ export default class MarkDownEditor extends React.Component {
             <input type="checkbox" id="italics" onChange={this.setItalics} checked={italics} />
           </label>
           <LinkAdder noteChanger={noteChanger} note={note} />
-          <button type="button" onClick={this.addImageTrigger}>{localText.tools.image[language]}</button>
+          <button type="button" onClick={this.addImageTrigger} aria-label="add image" id="image_add_trigger" />
           <input onChange={this.uploadImage} type="file" id="add_image" accept=".png,.jpeg,.webp,.jpg" ref={this.imageAdder} hidden />
         </div>
         <textarea id="markdown_area" value={note.text} onInput={this.setText} />
