@@ -30,7 +30,7 @@ function saveNotes(notes) {
 
 class App extends React.Component {
   defaultNote = {
-    text: '',
+    text: 'normal [b]bold [i]bold and italic[/i] [/b] normal again [i]only italic[/i]',
     exists: false,
     id: 0,
     reminders: [],
