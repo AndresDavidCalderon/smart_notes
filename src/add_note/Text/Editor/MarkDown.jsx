@@ -57,6 +57,18 @@ function getIndexAsRendered(text, index) {
   return newIndex;
 }
 
+function getRawIndex(text, renderIndex) {
+  let finalIndex = renderIndex;
+  let currentIndex = 0;
+  let tag;
+  while (currentIndex < finalIndex) {
+    tag = findNearestTag(text, currentIndex);
+    currentIndex = tag.index + tag.tag.length;
+    finalIndex += tag.tag.length;
+  }
+  return finalIndex - tag.tag.length;
+}
+
 function getChildren(string, index, endTag) {
   let nearestTag;
   const children = [];
@@ -138,7 +150,7 @@ function getCharsUntilNode(node, limiter) {
 function getSelectionIndex(textArea) {
   const globalSelection = window.getSelection();
   if ((!textArea.contains(globalSelection.anchorNode))
-  || (!textArea.contains(globalSelection.focusNode))) {
+    || (!textArea.contains(globalSelection.focusNode))) {
     return null;
   }
   const selection = {
@@ -149,10 +161,43 @@ function getSelectionIndex(textArea) {
   return selection;
 }
 
+function getNodeAtChars(parent, index) {
+  let baseCharachters = 0;
+  let topNode = parent;
+  // This runs for every level of the element tree
+  while (topNode.nodeType === Node.ELEMENT_NODE) {
+    const children = Array.from(topNode.childNodes);
+    let currentCharachter = 0;
+    const target = index - baseCharachters;
+    // find the node holding the index
+    const nodeAtPosition = children.find((node) => {
+      const newCharCount = currentCharachter + charsInNode(node);
+      currentCharachter = newCharCount;
+      if (newCharCount >= target - 1) {
+        return true;
+      }
+      return false;
+    });
+    topNode = nodeAtPosition;
+    baseCharachters += currentCharachter - charsInNode(nodeAtPosition);
+  }
+  return { node: topNode, offset: index - baseCharachters };
+}
+
+function SelectFromTo(startIndex, endIndex, textArea) {
+  const globalSelection = window.getSelection();
+  globalSelection.collapse(textArea);
+  const newRange = new Range();
+  const start = getNodeAtChars(textArea, startIndex);
+  const end = getNodeAtChars(textArea, endIndex);
+  newRange.setStart(start.node, start.offset);
+  newRange.setEnd(end.node, end.offset);
+}
+
 function MarkDownEditor({ note, noteChanger }) {
   const textArea = useRef();
 
-  const [selection, setSelection] = useState(0);
+  const [selection, setSelection] = useState({ start: 0, end: 0 });
   const handleSelection = () => {
     if (getSelectionIndex(textArea.current) !== null) {
       setSelection(getSelectionIndex(textArea.current));
@@ -162,9 +207,16 @@ function MarkDownEditor({ note, noteChanger }) {
     document.addEventListener('selectionchange', handleSelection);
     return () => { document.removeEventListener('selectionchange', handleSelection); };
   });
+  const manageKey = (event) => {
+    if (event.key.length === 1) {
+      noteChanger({ text: `${note.text.substring(0, getRawIndex(note.text, selection.start))}${event.key}${note.text.substring(getRawIndex(note.text, selection.end))}` });
+      SelectFromTo(selection.start + 1, selection.start + 1, textArea.current);
+      event.preventDefault();
+    }
+  };
 
   return (
-    <div ref={textArea} contentEditable suppressContentEditableWarning id="content">
+    <div ref={textArea} contentEditable onKeyDown={manageKey} suppressContentEditableWarning id="content">
       {bbcodeToHtml(note.text)}
     </div>
   );
