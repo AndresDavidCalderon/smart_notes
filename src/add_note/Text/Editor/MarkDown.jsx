@@ -72,19 +72,14 @@ function bbcodeToHtml(bbcodeString) {
   return children;
 }
 
-// safe means it preserves bbcode tags, it only deletes them if they end up empty
-
-function removeSubstringSafe(from, to, string) {
-
-}
-
 function MarkDownEditor({ note, noteChanger }) {
   const textArea = useRef();
 
   const [selection, setSelection] = useState({ start: 0, end: 0 });
   const handleSelection = () => {
-    if (renderedMethods.getSelectionIndex(textArea.current) !== null) {
-      setSelection(renderedMethods.getSelectionIndex(textArea.current));
+    const newSelection = renderedMethods.getSelectionIndex(textArea.current);
+    if (JSON.stringify(newSelection) !== JSON.stringify(selection) || newSelection !== null) {
+      setSelection(newSelection);
     }
   };
   useEffect(() => {
@@ -92,7 +87,10 @@ function MarkDownEditor({ note, noteChanger }) {
     return () => { document.removeEventListener('selectionchange', handleSelection); };
   });
   useEffect(() => {
-    renderedMethods.SelectFromTo(selection.start, selection.start, textArea.current);
+    const indexes = renderedMethods.getSelectionIndex(textArea.current);
+    if (JSON.stringify(indexes) !== JSON.stringify(selection) && indexes !== null) {
+      renderedMethods.SelectFromTo(selection.start, selection.start, textArea.current);
+    }
   });
   const manageKey = (event) => {
     if (event.key.length === 1) {
@@ -102,7 +100,13 @@ function MarkDownEditor({ note, noteChanger }) {
     } else {
       switch (event.key) {
         case 'Backspace': {
-          noteChanger({ text: `${note.text.substring(0, rawMethods.getRawIndex(note.text, selection.start - 1))}${note.text.substring(rawMethods.getRawIndex(note.text, selection.end))}` });
+          noteChanger({
+            text: rawMethods.removeSubstringSafe(
+              rawMethods.getRawIndex(note.text, selection.start - 1),
+              rawMethods.getRawIndex(note.text, selection.end),
+              note.text,
+            ),
+          });
           setSelection({ start: selection.start - 1, end: selection.start - 1 });
           event.preventDefault();
         }

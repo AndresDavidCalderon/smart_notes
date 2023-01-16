@@ -1,5 +1,5 @@
 import React from 'react';
-import * as licenses from './software.json';
+import * as licenses from './software';
 import './About.css';
 
 class AboutApp extends React.Component {
