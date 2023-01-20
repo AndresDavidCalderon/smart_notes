@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const {
-  Notification, BrowserWindow, app, Tray, Menu, shell,
+  Notification, BrowserWindow, app, Tray, Menu, shell, session,
 } = require('electron');
 
 const path = require('path');
@@ -48,10 +48,14 @@ function CloseApp() {
   app.quit();
 }
 
+function installLocalDevTools() {
+  session.defaultSession.loadExtension('/mnt/4E08692208690A73/reactDev');
+}
+
 app.on('ready', () => {
   CreateWindow();
   if (devtoolsInstaller !== undefined) {
-    installExtension(REACT_DEVELOPER_TOOLS);
+    installLocalDevTools();
   }
 });
 
