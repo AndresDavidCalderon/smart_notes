@@ -1,10 +1,10 @@
 const tags = ['[b]', '[/b]', '[i]', '[/i]'];
 
-function getEnd(openTag) {
+export function getEnd(openTag) {
   return `[/${openTag.substring(1)}`;
 }
 
-function findNearestTag(string, startingIndex) {
+export function findNearestTag(string, startingIndex) {
   const nearest = tags.reduce(({ index, tag }, newTag) => {
     const distance = string.indexOf(newTag, startingIndex);
     if ((distance < index || index === -1) && distance !== -1) {
@@ -18,7 +18,36 @@ function findNearestTag(string, startingIndex) {
   return nearest;
 }
 
-function getRawIndex(text, renderIndex) {
+export function removeUselessTags(string) {
+  let currentString = string;
+  let newString = '';
+  let lastTag = { tag: '', index: 0 };
+  while (lastTag.index !== -1) {
+    const currentIndex = lastTag.index + lastTag.tag.length;
+    const startTag = findNearestTag(currentString, currentIndex);
+    if (startTag.index !== -1) {
+      const endTagIndex = currentString.indexOf(
+        getEnd(startTag.tag),
+        startTag.index + startTag.tag.length,
+      );
+
+      newString += currentString.substring(currentIndex, startTag.index);
+
+      // check if tag is empty, closing tags are not checked
+      if ((endTagIndex !== -1 && endTagIndex !== startTag.index + startTag.tag.length) || startTag.tag.startsWith('[/')) {
+        // add current tag to new string
+        newString += startTag.tag;
+      } else {
+        // Remove end tag too
+        currentString = `${currentString.substring(0, endTagIndex)}${currentString.substring(endTagIndex + getEnd(startTag.tag).length)}`;
+      }
+    }
+    lastTag = startTag;
+  }
+  return newString;
+}
+
+export function getRawIndex(text, renderIndex) {
   let finalIndex = renderIndex;
   let currentIndex = 0;
   let tag = { index: 0, tag: '' };
@@ -44,7 +73,9 @@ function isIndexInsideTag(index, text) {
     lastTag = tag;
   }
   // if its inside the last tag scanned
-  if (lastTag.index < currentIndex && lastTag.index + lastTag.tag.length >= currentIndex) {
+  if (lastTag !== undefined
+     && lastTag.index < currentIndex
+     && lastTag.index + lastTag.tag.length >= currentIndex) {
     return { overlap: currentIndex - lastTag.index, tag: lastTag };
   }
   return false;
@@ -52,7 +83,7 @@ function isIndexInsideTag(index, text) {
 
 // safe means it preserves bbcode tags, it only deletes them if they end up empty
 
-function removeSubstringSafe(from, to, string) {
+export function removeSubstringSafe(from, to, string) {
   // is from or to are inside a tag, move them.
   let safeFrom = from;
   const fromTag = isIndexInsideTag(from, string);
@@ -69,7 +100,7 @@ function removeSubstringSafe(from, to, string) {
   let currentIndex = safeFrom;
   while (currentIndex < safeTo) {
     const tag = findNearestTag(string, currentIndex);
-    if (tag.index <= safeTo) {
+    if (tag.index < safeTo) {
       newString.push(tag.tag);
     }
     currentIndex = tag.index + tag.tag.length;
@@ -77,10 +108,3 @@ function removeSubstringSafe(from, to, string) {
   newString.push(string.substring(safeTo));
   return newString.join('');
 }
-
-export default {
-  getEnd,
-  getRawIndex,
-  findNearestTag,
-  removeSubstringSafe,
-};

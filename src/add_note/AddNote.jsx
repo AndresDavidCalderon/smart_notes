@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import ReminderDialogue from './AddReminder';
 import ReminderItem from './ReminderItem';
 import TextEditor from './Text/TextEditor';
+import { removeUselessTags } from './Text/Editor/bbcodeMethods';
 
 const text = {
   cancelNote: {
@@ -145,6 +146,7 @@ class AddNote extends React.Component {
             className="draft_option"
             id="confirm_note"
             onClick={() => {
+              note.text = removeUselessTags(note.text);
               if (note.exists) {
                 this.fixMissingAttachments();
                 confirmNoteChange();

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import rawMethods from './bbcodeMethods';
+import * as rawMethods from './bbcodeMethods';
 import renderedMethods from './renderedMethods';
 
 import './MarkDown.css';
