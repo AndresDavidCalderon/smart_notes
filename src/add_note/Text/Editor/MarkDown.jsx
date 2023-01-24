@@ -14,6 +14,9 @@ function addChildrenToTag(tag, children, index) {
     case '[i]': {
       return <i key={index}>{children}</i>;
     }
+    case '[img]': {
+      return <img width={80} alt="uploaded" src={children} key={index} />;
+    }
     case 'none': {
       return <span key={index}>{children}</span>;
     }
@@ -50,13 +53,32 @@ function getChildren(string, index, endTag) {
   return { children, endTag: nearestTag, length };
 }
 
+function fillInAttachments(text, attachments) {
+  let index = 0;
+  let newText = text;
+  let insertions = 0;
+  while (index !== -1 && index < text.length) {
+    index = newText.indexOf('@', index + 1);
+    if (index !== -1) {
+      if (insertions < attachments.length) {
+        newText = `${newText.substring(0, index)}${attachments[insertions]}${newText.substring(index + 1)}`;
+        insertions += 1;
+      } else {
+        newText = `${newText.substring(0, index - 1)}[missing attachment]${newText.substring(index)}`;
+        break;
+      }
+    }
+  }
+  return newText;
+}
+
 function bbcodeToHtml(bbcodeString) {
   let index = 0;
   const children = [];
   while (index < bbcodeString.length - 1) {
     const tag = rawMethods.findNearestTag(bbcodeString, index);
     if (tag.index === -1) {
-      children.push(bbcodeString.substring(index, tag.index));
+      children.push(bbcodeString.substring(index));
       break;
     } else {
       children.push(bbcodeString.substring(index, tag.index));
@@ -71,7 +93,6 @@ function bbcodeToHtml(bbcodeString) {
   }
   return children;
 }
-
 function MarkDownEditor({ note, noteChanger }) {
   const textArea = useRef();
 
@@ -100,14 +121,27 @@ function MarkDownEditor({ note, noteChanger }) {
     } else {
       switch (event.key) {
         case 'Backspace': {
-          noteChanger({
-            text: rawMethods.removeSubstringSafe(
-              rawMethods.getRawIndex(note.text, selection.start - 1),
-              rawMethods.getRawIndex(note.text, selection.end),
-              note.text,
-            ),
-          });
-          setSelection({ start: selection.start - 1, end: selection.start - 1 });
+          if (selection.end === selection.start) {
+            if (selection.start !== 0) {
+              noteChanger({
+                text: rawMethods.removeSubstringSafe(
+                  rawMethods.getRawIndex(note.text, selection.start - 1),
+                  rawMethods.getRawIndex(note.text, selection.end),
+                  note.text,
+                ),
+              });
+              setSelection({ start: selection.start - 1, end: selection.start - 1 });
+            }
+          } else {
+            noteChanger({
+              text: rawMethods.removeSubstringSafe(
+                rawMethods.getRawIndex(note.text, selection.start),
+                rawMethods.getRawIndex(note.text, selection.end),
+                note.text,
+              ),
+            });
+          }
+
           event.preventDefault();
         }
         // no default
@@ -117,7 +151,7 @@ function MarkDownEditor({ note, noteChanger }) {
 
   return (
     <div ref={textArea} contentEditable onKeyDown={manageKey} suppressContentEditableWarning id="content">
-      {bbcodeToHtml(note.text)}
+      {bbcodeToHtml(fillInAttachments(note.text, note.attachments))}
     </div>
   );
 }
@@ -125,6 +159,7 @@ function MarkDownEditor({ note, noteChanger }) {
 MarkDownEditor.propTypes = {
   note: PropTypes.shape({
     text: PropTypes.string,
+    attachments: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   noteChanger: PropTypes.func.isRequired,
   language: PropTypes.string.isRequired,
