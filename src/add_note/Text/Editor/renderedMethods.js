@@ -2,11 +2,28 @@ function charsInNode(node) {
   if (node.nodeType === Node.TEXT_NODE) {
     return node.textContent.length;
   }
+  if (node.tagName === 'IMG') {
+    return 1;
+  }
+  // if its an element that should have children
   return Array.from(node.childNodes).reduce((charachters, currentNode) => {
     let newCharCount = charachters;
     switch (node.nodeType) {
       case Node.ELEMENT_NODE: {
-        newCharCount += charsInNode(currentNode);
+        switch (node.tagName) {
+          case 'I':
+          case 'B': {
+            newCharCount += charsInNode(currentNode);
+            break;
+          }
+          case 'IMG': {
+            newCharCount += 1;
+            break;
+          }
+          default: {
+            throw Error('unknown element');
+          }
+        }
         break;
       }
       case Node.TEXT_NODE: {
@@ -25,7 +42,8 @@ function getCharsUntilNode(node, limiter) {
   }
   return Array.from(node.parentElement.childNodes).reduce((charachters, currentNode, index) => {
     if (index >= Array.from(node.parentElement.childNodes).indexOf(node)) { return charachters; }
-    return charachters + charsInNode(currentNode);
+    const charachtersInCurrentNode = charsInNode(currentNode);
+    return charachters + charachtersInCurrentNode;
   }, 0) + getCharsUntilNode(node.parentElement, limiter);
 }
 
@@ -35,12 +53,25 @@ function getSelectionIndex(textArea) {
       || (!textArea.contains(globalSelection.focusNode))) {
     return null;
   }
-  const selection = {
-    start: getCharsUntilNode(globalSelection.anchorNode, textArea) + globalSelection.anchorOffset,
+  let selection = {};
+  if (globalSelection.anchorNode !== textArea) {
+    selection = {
+      start: getCharsUntilNode(globalSelection.anchorNode, textArea) + globalSelection.anchorOffset,
 
-    end: getCharsUntilNode(globalSelection.focusNode, textArea) + globalSelection.focusOffset,
-  };
-  return selection;
+      end: getCharsUntilNode(globalSelection.focusNode, textArea) + globalSelection.focusOffset,
+    };
+  } else {
+    const children = Array.from(textArea.childNodes);
+    const lastElement = children[globalSelection.focusOffset - 1];
+    selection.start = getCharsUntilNode(lastElement, textArea) + 1;
+    selection.end = selection.start;
+  }
+  const orderedSelection = { ...selection };
+  if (selection.end < selection.start) {
+    orderedSelection.start = selection.end;
+    orderedSelection.end = selection.start;
+  }
+  return orderedSelection;
 }
 
 function getNodeAtChars(parent, index) {
