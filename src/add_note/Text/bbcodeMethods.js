@@ -1,4 +1,4 @@
-const tags = ['[b]', '[/b]', '[i]', '[/i]'];
+const tags = ['[b]', '[/b]', '[i]', '[/i]', '[img]', '[/img]'];
 
 export function getEnd(openTag) {
   return `[/${openTag.substring(1)}`;
@@ -11,7 +11,7 @@ export function findNearestTag(string, startingIndex) {
       return { index: distance, tag: newTag };
     }
     return { index, tag };
-  }, { index: -1, tag: 'none' });
+  }, { index: -1, tag: '' });
   if (nearest === -1) {
     return { index: -1, tag: 'not found' };
   }
@@ -51,12 +51,29 @@ export function getRawIndex(text, renderIndex) {
   let finalIndex = renderIndex;
   let currentIndex = 0;
   let tag = { index: 0, tag: '' };
-  while (currentIndex < finalIndex) {
+  while (currentIndex < finalIndex && tag.index !== -1) {
     tag = findNearestTag(text, currentIndex);
     currentIndex = tag.index + tag.tag.length;
     finalIndex += tag.tag.length;
   }
   return finalIndex - tag.tag.length;
+}
+
+function isInEffectOfTag(index, string, tag) {
+  let currentIndex = 0;
+  let isOpen = false;
+  while (currentIndex < index) {
+    if (isOpen) {
+      currentIndex = string.indexOf(getEnd(tag), currentIndex);
+    } else {
+      currentIndex = string.indexOf(tag, currentIndex);
+    }
+    if (currentIndex === -1) {
+      return isOpen;
+    }
+    isOpen = !isOpen;
+  }
+  return !isOpen;
 }
 
 function isIndexInsideTag(index, text) {
@@ -81,8 +98,24 @@ function isIndexInsideTag(index, text) {
   return false;
 }
 
-// safe means it preserves bbcode tags, it only deletes them if they end up empty
+// tags with insides that shouldnt be edited.
+const protectedTags = ['img'];
 
+export function takeOutOfProtectedTag(index, string, after) {
+  let newIndex = index;
+  protectedTags.forEach((tag) => {
+    if (isInEffectOfTag(index, string, tag)) {
+      if (after) {
+        newIndex = string.indexOf(getEnd(tag), index) + getEnd(tag).length;
+      } else {
+        newIndex = string.lastIndexOf(tag, index);
+      }
+    }
+  });
+  return newIndex;
+}
+
+// safe means it preserves bbcode tags, it only deletes them if they end up empty
 export function removeSubstringSafe(from, to, string) {
   // is from or to are inside a tag, move them.
   let safeFrom = from;
@@ -100,10 +133,15 @@ export function removeSubstringSafe(from, to, string) {
   let currentIndex = safeFrom;
   while (currentIndex < safeTo) {
     const tag = findNearestTag(string, currentIndex);
-    if (tag.index < safeTo) {
-      newString.push(tag.tag);
+    if (tag.index !== -1) {
+      if (tag.index < safeTo) {
+        newString.push(tag.tag);
+      }
+      currentIndex = tag.index + tag.tag.length;
+    } else {
+      newString.push(string.substring(currentIndex, safeTo - 1));
+      break;
     }
-    currentIndex = tag.index + tag.tag.length;
   }
   newString.push(string.substring(safeTo));
   return newString.join('');

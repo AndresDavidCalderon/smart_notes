@@ -3,7 +3,7 @@ function charsInNode(node) {
     return node.textContent.length;
   }
   if (node.tagName === 'IMG') {
-    return 1;
+    return 2;
   }
   // if its an element that should have children
   return Array.from(node.childNodes).reduce((charachters, currentNode) => {
@@ -17,7 +17,7 @@ function charsInNode(node) {
             break;
           }
           case 'IMG': {
-            newCharCount += 1;
+            newCharCount += 2;
             break;
           }
           default: {
@@ -47,30 +47,36 @@ function getCharsUntilNode(node, limiter) {
   }, 0) + getCharsUntilNode(node.parentElement, limiter);
 }
 
-function getSelectionIndex(textArea) {
+function getSelectionIndex(textArea, offset, node) {
+  if (node !== textArea) {
+    return getCharsUntilNode(node, textArea) + offset;
+  }
+  if (offset !== 0) {
+    const children = Array.from(textArea.childNodes);
+    const lastElement = children[offset - 1];
+    return getCharsUntilNode(lastElement, textArea) + 2;
+  }
+  return 0;
+}
+
+export function getSelectionRange(textArea) {
   const globalSelection = window.getSelection();
   if ((!textArea.contains(globalSelection.anchorNode))
       || (!textArea.contains(globalSelection.focusNode))) {
     return null;
   }
-  let selection = {};
-  if (globalSelection.anchorNode !== textArea) {
-    selection = {
-      start: getCharsUntilNode(globalSelection.anchorNode, textArea) + globalSelection.anchorOffset,
+  const selection = [getSelectionIndex(
+    textArea,
+    globalSelection.anchorOffset,
+    globalSelection.anchorNode,
+  ),
+  getSelectionIndex(
+    textArea,
+    globalSelection.focusOffset,
+    globalSelection.focusNode,
+  )];
 
-      end: getCharsUntilNode(globalSelection.focusNode, textArea) + globalSelection.focusOffset,
-    };
-  } else {
-    const children = Array.from(textArea.childNodes);
-    const lastElement = children[globalSelection.focusOffset - 1];
-    selection.start = getCharsUntilNode(lastElement, textArea) + 1;
-    selection.end = selection.start;
-  }
-  const orderedSelection = { ...selection };
-  if (selection.end < selection.start) {
-    orderedSelection.start = selection.end;
-    orderedSelection.end = selection.start;
-  }
+  const orderedSelection = { start: Math.min(...selection), end: Math.max(...selection) };
   return orderedSelection;
 }
 
@@ -78,7 +84,7 @@ function getNodeAtChars(parent, index) {
   let baseCharachters = 0;
   let topNode = parent;
   // This runs for every level of the element tree
-  while (topNode.nodeType === Node.ELEMENT_NODE) {
+  while (topNode.nodeType === Node.ELEMENT_NODE && topNode.tagName !== 'IMG') {
     const children = Array.from(topNode.childNodes);
     let currentCharachter = 0;
     const target = index - baseCharachters;
@@ -97,21 +103,21 @@ function getNodeAtChars(parent, index) {
   return { node: topNode, offset: index - baseCharachters };
 }
 
-function SelectFromTo(startIndex, endIndex, textArea) {
+export function SelectFromTo(startIndex, endIndex, textArea) {
   const globalSelection = window.getSelection();
   globalSelection.removeAllRanges();
   const newRange = new Range();
   const start = getNodeAtChars(textArea, startIndex);
   const end = getNodeAtChars(textArea, endIndex);
-  newRange.setStart(start.node, start.offset);
-  newRange.setEnd(end.node, end.offset);
+  if (start.node.tagName !== 'IMG') {
+    newRange.setStart(start.node, start.offset);
+  } else {
+    newRange.setStart(textArea, Array.from(textArea.childNodes).indexOf(start.node) + 1);
+  }
+  if (end.node.tagName !== 'IMG') {
+    newRange.setEnd(end.node, end.offset);
+  } else {
+    newRange.setEnd(textArea, Array.from(textArea.childNodes).indexOf(end.node) + 1);
+  }
   globalSelection.addRange(newRange);
 }
-
-export default {
-  charsInNode,
-  getCharsUntilNode,
-  getSelectionIndex,
-  getNodeAtChars,
-  SelectFromTo,
-};

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import ReminderDialogue from './AddReminder';
 import ReminderItem from './ReminderItem';
 import TextEditor from './Text/TextEditor';
-import { removeUselessTags } from './Text/Editor/bbcodeMethods';
+import { removeUselessTags } from './Text/bbcodeMethods';
 
 const text = {
   cancelNote: {
@@ -49,7 +49,7 @@ class AddNote extends React.Component {
   fixMissingAttachments = () => {
     const { note } = this.props;
     const newAttachments = [];
-    note.attached.forEach((attachment, index) => {
+    note.attachments.forEach((attachment, index) => {
       const attachPosition = note.text.indexOf(`[attachment #${index}]`);
       if (attachPosition !== -1) {
         // We replace the old index with the new one.
@@ -62,7 +62,7 @@ class AddNote extends React.Component {
         delete note.placeholders[placeholder];
       }
     });
-    note.attached = newAttachments;
+    note.attachments = newAttachments;
   };
 
   newReminder = () => {
@@ -164,7 +164,7 @@ class AddNote extends React.Component {
 
         <div id="note_properties">
 
-          <TextEditor note={note} noteChanger={changer} language={language} />
+          <TextEditor editable note={note} noteChanger={changer} language={language} />
 
           {note.reminders.length > 0 ? <h2>{text.reminders.title[language]}</h2> : false}
 
@@ -196,7 +196,7 @@ const noteShape = {
     max_reminders: PropTypes.number,
     id: PropTypes.number,
   })),
-  attached: PropTypes.arrayOf(PropTypes.string).isRequired,
+  attachments: PropTypes.arrayOf(PropTypes.string).isRequired,
   nextReminderID: PropTypes.number,
 };
 
