@@ -50,16 +50,11 @@ class AddNote extends React.Component {
     const { note } = this.props;
     const newAttachments = [];
     note.attachments.forEach((attachment, index) => {
-      const attachPosition = note.text.indexOf(`[attachment #${index}]`);
+      const attachPosition = note.text.indexOf(`@${index}`);
       if (attachPosition !== -1) {
         // We replace the old index with the new one.
-        note.text = `${note.text.substring(0, attachPosition)}[attachment #${newAttachments.length}]${note.text.substring(attachPosition + 15)}`;
+        note.text = `${note.text.substring(0, attachPosition)}@${newAttachments.length}${note.text.substring(attachPosition + 2)}`;
         newAttachments.push(attachment);
-      }
-    });
-    Object.keys(note.placeholders).forEach((placeholder) => {
-      if (note.text.indexOf(placeholder) === -1) {
-        delete note.placeholders[placeholder];
       }
     });
     note.attachments = newAttachments;

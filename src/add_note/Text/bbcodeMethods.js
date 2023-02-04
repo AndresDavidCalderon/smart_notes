@@ -42,6 +42,7 @@ export function removeUselessTags(string) {
         currentString = `${currentString.substring(0, endTagIndex)}${currentString.substring(endTagIndex + getEnd(startTag.tag).length)}`;
       }
     }
+    newString += currentString.substring(lastTag.index + lastTag.length);
     lastTag = startTag;
   }
   return newString;
@@ -139,7 +140,6 @@ export function removeSubstringSafe(from, to, string) {
       }
       currentIndex = tag.index + tag.tag.length;
     } else {
-      newString.push(string.substring(currentIndex, safeTo - 1));
       break;
     }
   }
