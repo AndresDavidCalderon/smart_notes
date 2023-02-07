@@ -89,7 +89,7 @@ function getNodeAtChars(parent, index) {
     let currentCharachter = 0;
     const target = index - baseCharachters;
     // find the node holding the index
-    const nodeAtPosition = children.find((node) => {
+    let nodeAtPosition = children.find((node) => {
       const newCharCount = currentCharachter + charsInNode(node);
       currentCharachter = newCharCount;
       if (newCharCount >= target) {
@@ -97,6 +97,11 @@ function getNodeAtChars(parent, index) {
       }
       return false;
     });
+    // in the valid case of there being no children in parent
+    if (nodeAtPosition === undefined) {
+      nodeAtPosition = parent;
+      break;
+    }
     topNode = nodeAtPosition;
     baseCharachters += currentCharachter - charsInNode(nodeAtPosition);
   }
