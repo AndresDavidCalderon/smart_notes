@@ -88,19 +88,21 @@ function getNodeAtChars(parent, index) {
     const children = Array.from(topNode.childNodes);
     let currentCharachter = 0;
     const target = index - baseCharachters;
+    if (children.length === 0) {
+      break;
+    }
     // find the node holding the index
-    let nodeAtPosition = children.find((node) => {
-      const newCharCount = currentCharachter + charsInNode(node);
-      currentCharachter = newCharCount;
-      if (newCharCount >= target) {
+    const nodeAtPosition = children.find((node) => {
+      currentCharachter += charsInNode(node);
+      if (currentCharachter >= target) {
         return true;
       }
       return false;
     });
-    // in the valid case of there being no children in parent
-    if (nodeAtPosition === undefined) {
-      nodeAtPosition = parent;
-      break;
+    if (currentCharachter < target) {
+      // The find loop before couldnt find a charachter with the index inside
+      // and nodeAtPosition will be undefined.
+      throw Error(`cant find node in char ${index} index isnt inside text`);
     }
     topNode = nodeAtPosition;
     baseCharachters += currentCharachter - charsInNode(nodeAtPosition);

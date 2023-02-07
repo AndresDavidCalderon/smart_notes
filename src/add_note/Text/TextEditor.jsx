@@ -44,20 +44,15 @@ function TextEditor({ note, noteChanger }) {
   };
   const manageInput = async (event) => {
     switch (event.nativeEvent.inputType) {
+      case 'insertText': {
+        insertTextOnSelection(event.nativeEvent.data);
+        break;
+      }
       case 'insertFromPaste': {
         const clipboardText = await navigator.clipboard.readText();
         insertTextOnSelection(clipboardText);
         break;
       }
-      case 'insertText': {
-        insertTextOnSelection(event.nativeEvent.data);
-        break;
-      }
-      case 'insertParagraph': {
-        insertTextOnSelection('\n');
-        break;
-      }
-      case 'deleteByCut':
       case 'deleteContentBackward': {
         if (selection.end === selection.start) {
           if (selection.start !== 0) {
@@ -86,9 +81,14 @@ function TextEditor({ note, noteChanger }) {
     event.preventDefault();
   };
 
+  const managePaste = (event) => {
+    insertTextOnSelection(event.clipboardData.getData('text/plain'));
+    event.preventDefault();
+  };
+
   return (
     <div id="content_editor_container">
-      <TextRenderer note={note} editable ref={textArea} inputManager={manageInput} width="90%" height="300px" />
+      <TextRenderer note={note} editable ref={textArea} pasteManager={managePaste} inputManager={manageInput} width="90%" height="300px" />
     </div>
   );
 }

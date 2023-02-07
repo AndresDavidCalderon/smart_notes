@@ -91,12 +91,13 @@ function bbcodeToHtml(bbcodeString) {
 }
 
 const TextRenderer = forwardRef(({
-  note, editable, inputManager,
+  note, editable, inputManager, pasteManager,
 }, ref) => (
   <div
     ref={ref}
     contentEditable={editable}
     onInput={inputManager}
+    onPaste={pasteManager}
     suppressContentEditableWarning
     // This is due to the input method not being cancellable, adding children makes text duplicate.
     // eslint-disable-next-line react/no-danger
@@ -108,6 +109,7 @@ const TextRenderer = forwardRef(({
 ));
 TextRenderer.defaultProps = {
   inputManager: () => undefined,
+  pasteManager: () => undefined,
 };
 
 TextRenderer.propTypes = {
@@ -117,6 +119,7 @@ TextRenderer.propTypes = {
   }).isRequired,
   editable: PropTypes.bool.isRequired,
   inputManager: PropTypes.func,
+  pasteManager: PropTypes.func,
 };
 
 TextRenderer.displayName = 'TextRenderer';
