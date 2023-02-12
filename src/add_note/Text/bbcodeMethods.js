@@ -4,10 +4,24 @@ export function getEnd(openTag) {
   return `[/${openTag.substring(1)}`;
 }
 
+export function isBetween(starting, ending, text, index) {
+  let open = false;
+  let currentIndex = 0;
+  while (currentIndex < index) {
+    const nextIndex = text.indexOf(open ? ending : starting, currentIndex);
+    if (nextIndex === -1) {
+      return open;
+    }
+    open = !open;
+    currentIndex = nextIndex;
+  }
+  return open;
+}
+
 export function findNearestTag(string, startingIndex) {
   const nearest = tags.reduce(({ index, tag }, newTag) => {
     const distance = string.indexOf(newTag, startingIndex);
-    if ((distance < index || index === -1) && distance !== -1) {
+    if ((distance < index || index === -1) && distance !== -1 && !isBetween('ESCAPE START', 'ESCAPE END', string, distance)) {
       return { index: distance, tag: newTag };
     }
     return { index, tag };
