@@ -5,7 +5,8 @@ import PropTypes from 'prop-types';
 import TextRenderer from './TextRenderer';
 import * as rawMethods from './bbcodeMethods';
 import * as renderedMethods from './renderedMethods';
-
+import LinkAdder from './tool_bar/Link';
+import ImageAdder from './tool_bar/ImageAdder';
 import './TextEditor.css';
 
 function TextEditor({ note, noteChanger }) {
@@ -87,9 +88,19 @@ function TextEditor({ note, noteChanger }) {
   };
 
   return (
-    <div id="content_editor_container">
-      <TextRenderer note={note} editable ref={textArea} pasteManager={managePaste} inputManager={manageInput} width="90%" height="300px" />
-    </div>
+    <>
+      <ImageAdder
+        note={note}
+        noteChanger={noteChanger}
+        selection={{
+          start: rawMethods.getRawIndex(selection.start),
+          end: rawMethods.getRawIndex(selection.end),
+        }}
+      />
+      <div id="content_editor_container">
+        <TextRenderer note={note} editable ref={textArea} pasteManager={managePaste} inputManager={manageInput} width="90%" height="300px" />
+      </div>
+    </>
   );
 }
 TextEditor.defaultProps = {

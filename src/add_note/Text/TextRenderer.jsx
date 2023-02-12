@@ -4,19 +4,19 @@ import * as rawMethods from './bbcodeMethods';
 import './TextRenderer.css';
 
 // the index is used as key
-function addChildrenToTag(tag, children, index) {
+function addChildrenToTag(tag, children, _index) {
   switch (tag) {
     case '[b]': {
-      return <b key={index}>{children}</b>;
+      return `<b>${children}</b>`;
     }
     case '[i]': {
-      return <i key={index}>{children}</i>;
+      return `<i>${children}</i>`;
     }
     case '[img]': {
-      return <img width={80} alt="uploaded" src={children} key={index} />;
+      return `<img width={80} alt="uploaded" src=${children}/>`;
     }
     case 'none': {
-      return <span key={index}>{children}</span>;
+      return `<span>${children}</span>`;
     }
     default: {
       return 'invalid tag';
@@ -55,7 +55,7 @@ function fillInAttachments(text, attachments) {
   let index = 0;
   let newText = text;
   while (index !== -1 && index < text.length) {
-    index = newText.indexOf('@', index + 1);
+    index = newText.indexOf('@', index);
     const attachmentIndex = parseInt(newText[index + 1], 10);
     if (index !== -1 && !Number.isNaN(attachmentIndex)) {
       if (attachments[attachmentIndex] !== undefined) {
@@ -63,6 +63,7 @@ function fillInAttachments(text, attachments) {
       } else {
         newText = `${newText.substring(0, index - 1)}[missing attachment]${newText.substring(index + 2)}`;
       }
+      index += 1;
     }
   }
   return newText;
@@ -70,24 +71,24 @@ function fillInAttachments(text, attachments) {
 
 function bbcodeToHtml(bbcodeString) {
   let index = 0;
-  const children = [];
+  let html = '';
   while (index < bbcodeString.length) {
     const tag = rawMethods.findNearestTag(bbcodeString, index);
     if (tag.index === -1) {
-      children.push(bbcodeString.substring(index));
+      html += bbcodeString.substring(index);
       break;
     } else {
-      children.push(bbcodeString.substring(index, tag.index));
+      html += bbcodeString.substring(index, tag.index);
       const newBlock = getChildren(
         bbcodeString,
         tag.index + tag.tag.length,
         rawMethods.getEnd(tag.tag),
       );
-      children.push(addChildrenToTag(tag.tag, newBlock.children, tag.index));
+      html += addChildrenToTag(tag.tag, newBlock.children, tag.index);
       index = newBlock.length;
     }
   }
-  return children;
+  return html;
 }
 
 const TextRenderer = forwardRef(({

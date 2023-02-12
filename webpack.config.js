@@ -8,8 +8,8 @@ const devMode = process.env.NODE_ENV !== 'production';
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const csp = {
-  development: "default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss://*.preview.app.github.dev:8080/ws; img-src * data: ; ; script-src 'self' 'unsafe-inline';",
-  production: "default-src 'self'; img-src data: *  ;",
+  development: "default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss://*.preview.app.github.dev:8080/ws; img-src * data: blob: ; ; script-src 'self' 'unsafe-inline';",
+  production: "default-src 'self'; img-src data: blob: *  ;",
 };
 
 module.exports = {

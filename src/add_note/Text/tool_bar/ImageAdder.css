@@ -1,0 +1,6 @@
+#image_add_button{
+    background: url("add_image.png") center no-repeat;
+    width: 32px;
+    height: 32px;
+    margin: 5px;
+}
