@@ -14,13 +14,14 @@ function ImageAdder({ note, noteChanger, selection }) {
     fileReader.onload = () => {
       const textToInsert = `@${note.attachments.length}`;
       noteChanger({
-        attachments: [...note.attachments, `[img]${fileReader.result}[/img]`],
+        attachments: [...note.attachments, `[img]ESCAPE START${fileReader.result}ESCAPE END[/img]`],
         text: `${note.text.substring(0, selection.start)}${textToInsert}${note.text.substring(selection.end)}`,
       });
     };
     fileReader.readAsDataURL(file);
   };
-  const submitImages = async (event) => {
+
+  const submitImages = (event) => {
     Array(event.target.files).forEach((_file, index) => { addImage(event.target.files[index]); });
   };
   return (
