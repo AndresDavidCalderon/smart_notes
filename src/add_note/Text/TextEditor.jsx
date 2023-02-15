@@ -14,6 +14,12 @@ function TextEditor({ note, noteChanger }) {
 
   const [selection, setSelection] = useState({ start: 0, end: 0 });
 
+  function getRawSelection() {
+    return {
+      start: rawMethods.getRawIndex(note.text, selection.start),
+      end: rawMethods.getRawIndex(note.text, selection.end),
+    };
+  }
   const setSelectionSafe = (start, end) => {
     if (start < 0) {
       throw Error('Invalid selection start, index must be greater than 0');
@@ -43,6 +49,7 @@ function TextEditor({ note, noteChanger }) {
     noteChanger({ text: `${note.text.substring(0, rawMethods.getRawIndex(note.text, selection.start))}${text}${note.text.substring(rawMethods.getRawIndex(note.text, selection.end))}` });
     setSelectionSafe({ start: selection.start + text.length, end: selection.start + text.length });
   };
+
   const manageInput = async (event) => {
     switch (event.nativeEvent.inputType) {
       case 'insertText': {
@@ -55,12 +62,13 @@ function TextEditor({ note, noteChanger }) {
         break;
       }
       case 'deleteContentBackward': {
+        const rawSelection = getRawSelection();
         if (selection.end === selection.start) {
           if (selection.start !== 0) {
             noteChanger({
               text: rawMethods.removeSubstringSafe(
-                rawMethods.getRawIndex(note.text, selection.start - 1),
-                rawMethods.getRawIndex(note.text, selection.end),
+                rawSelection.start - 1,
+                rawSelection.end,
                 note.text,
               ),
             });
@@ -68,13 +76,22 @@ function TextEditor({ note, noteChanger }) {
         } else {
           noteChanger({
             text: rawMethods.removeSubstringSafe(
-              rawMethods.getRawIndex(note.text, selection.start),
-              rawMethods.getRawIndex(note.text, selection.end),
+              rawSelection.start,
+              rawSelection.end,
               note.text,
             ),
           });
         }
         setSelection({ start: selection.start - 1, end: selection.start - 1 });
+        break;
+      }
+      case 'formatBold': {
+        const rawSelection = getRawSelection();
+        noteChanger({ text: rawMethods.giveEffectToArea(note.text, rawSelection.start, rawSelection.end, '[b]', '[/b]') });
+        break;
+      }
+      case 'insertParagraph': {
+        insertTextOnSelection('\n');
         break;
       }
       // no default

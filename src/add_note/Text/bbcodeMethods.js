@@ -4,24 +4,50 @@ export function getEnd(openTag) {
   return `[/${openTag.substring(1)}`;
 }
 
-export function isBetween(starting, ending, text, index) {
-  let open = false;
-  let currentIndex = 0;
-  while (currentIndex < index) {
-    const nextIndex = text.indexOf(open ? ending : starting, currentIndex);
-    if (nextIndex === -1) {
-      return open;
-    }
-    open = !open;
-    currentIndex = nextIndex;
+export function isAreaBetween(startingTag, endingTag, text, startIndex, endIndex) {
+  const currentIndex = text.lastIndexOf(startingTag, startIndex);
+  if (currentIndex === -1) {
+    return false;
   }
-  return open;
+  if (text.indexOf(endingTag, startIndex) < endIndex) {
+    return false;
+  }
+  return true;
 }
 
+export function giveEffectToArea(text, startIndex, endIndex, startTag, endTag) {
+  let newText = text;
+  let newEndIndex;
+  const startTagIndex = text.lastIndexOf(startTag, startIndex);
+  const isClosedBeforeSelection = startTagIndex === -1
+  || text.indexOf(endTag, startTagIndex) < startTag;
+  if (isClosedBeforeSelection) {
+    const startingTagInSelection = text.indexOf(startIndex, startTag);
+    if (startingTagInSelection === -1 || startingTagInSelection > endIndex) {
+      // this means that the effect doesnt start inside or before the selection
+      // and therefore doesnt end inside it either so we can return now.
+      return `${text.substring(0, startIndex - 1)}${startTag}${text.substring(startIndex - 1, endIndex)}${endTag}${text.substring(endIndex)}`;
+    }
+    // this means that the effect starts in the selection, and we gottas move it to the start.
+    const selectionText = text.substring(startIndex, endIndex).replace(startTag, '');
+    newText = `${text.substring(0, startIndex - 1)}${startTag}${selectionText}${text.substring(endIndex + 1)}`;
+    newEndIndex -= startTag.length;
+  }
+  const endTagIndex = newText.indexOf(endTag, startIndex);
+  if (endIndex === -1) {
+    throw Error(`invalid BBCode text given, ${startTag} doesnt close`);
+  }
+  if (endTagIndex > newEndIndex) {
+    return newText;
+  }
+  // this means that the effect ends in the selection, and we gottas move it to the end.
+  const selectionText = text.substring(startIndex - 1, endIndex).replace(endTag, '');
+  return `${text.substring(0, startIndex - 1)}${selectionText}${endTag}${text.substring(endIndex)}`;
+}
 export function findNearestTag(string, startingIndex) {
   const nearest = tags.reduce(({ index, tag }, newTag) => {
     const distance = string.indexOf(newTag, startingIndex);
-    if ((distance < index || index === -1) && distance !== -1 && !isBetween('ESCAPE START', 'ESCAPE END', string, distance)) {
+    if ((distance < index || index === -1) && distance !== -1 && !isAreaBetween('ESCAPE START', 'ESCAPE END', string, distance, distance)) {
       return { index: distance, tag: newTag };
     }
     return { index, tag };
@@ -74,23 +100,6 @@ export function getRawIndex(text, renderIndex) {
   return finalIndex - tag.tag.length;
 }
 
-function isInEffectOfTag(index, string, tag) {
-  let currentIndex = 0;
-  let isOpen = false;
-  while (currentIndex < index) {
-    if (isOpen) {
-      currentIndex = string.indexOf(getEnd(tag), currentIndex);
-    } else {
-      currentIndex = string.indexOf(tag, currentIndex);
-    }
-    if (currentIndex === -1) {
-      return isOpen;
-    }
-    isOpen = !isOpen;
-  }
-  return !isOpen;
-}
-
 function isIndexInsideTag(index, text) {
   let currentIndex = 0;
   let lastTag;
@@ -111,23 +120,6 @@ function isIndexInsideTag(index, text) {
     return { overlap: currentIndex - lastTag.index, tag: lastTag };
   }
   return false;
-}
-
-// tags with insides that shouldnt be edited.
-const protectedTags = ['img'];
-
-export function takeOutOfProtectedTag(index, string, after) {
-  let newIndex = index;
-  protectedTags.forEach((tag) => {
-    if (isInEffectOfTag(index, string, tag)) {
-      if (after) {
-        newIndex = string.indexOf(getEnd(tag), index) + getEnd(tag).length;
-      } else {
-        newIndex = string.lastIndexOf(tag, index);
-      }
-    }
-  });
-  return newIndex;
 }
 
 // safe means it preserves bbcode tags, it only deletes them if they end up empty
