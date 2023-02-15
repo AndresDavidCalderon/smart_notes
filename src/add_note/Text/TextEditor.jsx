@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import TextRenderer from './TextRenderer';
 import * as rawMethods from './bbcodeMethods';
 import * as renderedMethods from './renderedMethods';
-import LinkAdder from './tool_bar/Link';
 import ImageAdder from './tool_bar/ImageAdder';
 import './TextEditor.css';
 
@@ -88,6 +87,11 @@ function TextEditor({ note, noteChanger }) {
       case 'formatBold': {
         const rawSelection = getRawSelection();
         noteChanger({ text: rawMethods.giveEffectToArea(note.text, rawSelection.start, rawSelection.end, '[b]', '[/b]') });
+        break;
+      }
+      case 'formatItalic': {
+        const rawSelection = getRawSelection();
+        noteChanger({ text: rawMethods.giveEffectToArea(note.text, rawSelection.start, rawSelection.end, '[i]', '[/i]') });
         break;
       }
       case 'insertParagraph': {

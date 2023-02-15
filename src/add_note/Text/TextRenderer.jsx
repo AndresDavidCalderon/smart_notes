@@ -51,7 +51,7 @@ function getChildren(string, index, endTag) {
       length = nextTag.length;
     }
   }
-  return { children, endTag: nearestTag, length };
+  return { children: children.join(''), endTag: nearestTag, length };
 }
 
 function fillInAttachments(text, attachments) {
