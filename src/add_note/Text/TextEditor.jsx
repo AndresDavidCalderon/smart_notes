@@ -6,6 +6,7 @@ import TextRenderer from './TextRenderer';
 import * as rawMethods from './bbcodeMethods';
 import * as renderedMethods from './renderedMethods';
 import ImageAdder from './tool_bar/ImageAdder';
+import EffectAdder from './tool_bar/EffectAdder';
 import './TextEditor.css';
 
 function TextEditor({ note, noteChanger }) {
@@ -142,14 +143,28 @@ function TextEditor({ note, noteChanger }) {
 
   return (
     <>
-      <ImageAdder
-        note={note}
-        noteChanger={noteChanger}
-        selection={{
-          start: rawMethods.getRawIndex(selection.start),
-          end: rawMethods.getRawIndex(selection.end),
-        }}
-      />
+      <div id="toolbar">
+
+        <ImageAdder
+          note={note}
+          noteChanger={noteChanger}
+          selection={getRawSelection()}
+        />
+        <EffectAdder
+          buttonContent={<b>B</b>}
+          text={note.text}
+          tag="[b]"
+          noteChanger={noteChanger}
+          rawSelection={getRawSelection()}
+        />
+        <EffectAdder
+          buttonContent={<b>I</b>}
+          text={note.text}
+          tag="[i]"
+          noteChanger={noteChanger}
+          rawSelection={getRawSelection()}
+        />
+      </div>
       <div id="content_editor_container">
         <TextRenderer note={note} editable ref={textArea} pasteManager={managePaste} inputManager={manageInput} width="90%" height="300px" />
       </div>

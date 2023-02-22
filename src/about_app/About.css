@@ -8,10 +8,11 @@
     background-position: center;
 }
 #about_dialogue{
+    min-width: 100px;
     position: fixed;
-    width: 250px;
+    width: 20vw;
     height: 40vh;
-    right: 30vw;
+    right: 40vw;
     top: 30vh;
     overflow: auto;
     border-radius: 4px;
@@ -30,6 +31,7 @@
     text-align: justify;
 }
 #current_license{
+    overflow: auto;
     position: fixed;
     width: 80vw;
     height: 80vh;

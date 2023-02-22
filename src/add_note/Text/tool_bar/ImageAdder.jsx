@@ -1,12 +1,14 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { PropTypes } from 'prop-types';
 import './ImageAdder.css';
 
 function ImageAdder({ note, noteChanger, selection }) {
   const fileInput = useRef();
 
+  const [insertionRange, setInsertionRange] = useState({ start: 0, end: 0 });
   // Used to hide the file input
   const triggerFile = () => {
+    setInsertionRange(selection);
     fileInput.current.click();
   };
   const addImage = (file) => {
@@ -15,7 +17,7 @@ function ImageAdder({ note, noteChanger, selection }) {
       const textToInsert = `@${note.attachments.length}`;
       noteChanger({
         attachments: [...note.attachments, `[img]ESCAPE START${fileReader.result}ESCAPE END[/img]`],
-        text: `${note.text.substring(0, selection.start)}${textToInsert}${note.text.substring(selection.end)}`,
+        text: `${note.text.substring(0, insertionRange.start)}${textToInsert}${note.text.substring(insertionRange.end)}`,
       });
     };
     fileReader.readAsDataURL(file);

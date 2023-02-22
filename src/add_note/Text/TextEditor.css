@@ -4,3 +4,10 @@
 	border: solid gray 2px;
 	border-radius: 4px;
 }
+
+#toolbar{
+	width: 100%;
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+}

@@ -13,7 +13,12 @@ function addChildrenToTag(tag, children, _index) {
       return `<i>${children}</i>`;
     }
     case '[img]': {
-      const text = children[0];
+      let text;
+      if (typeof (children) === 'string') {
+        text = children;
+      } else {
+        [text] = children;
+      }
       const endingIndex = text.length - 'ESCAPE END'.length - 1;
       const startingIndex = 'ESCAPE START'.length;
       return `<img height=80 alt="uploaded" src=${`${text.substring(startingIndex, endingIndex)}`}/>`;

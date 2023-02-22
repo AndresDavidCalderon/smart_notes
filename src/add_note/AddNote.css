@@ -23,6 +23,7 @@
 }
 
 #add_dialogue {
+  min-width: 300px;
   position: fixed;
   overflow: auto;
   padding: 10px;

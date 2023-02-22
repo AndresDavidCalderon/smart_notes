@@ -9,7 +9,6 @@ export function getSymbol(tag) {
   }
   return tag.substring(1, tag.length - 1);
 }
-
 export function isAreaBetween(startingTag, endingTag, text, startIndex, endIndex) {
   const currentIndex = text.lastIndexOf(startingTag, startIndex);
   if (currentIndex === -1) {
@@ -19,6 +18,24 @@ export function isAreaBetween(startingTag, endingTag, text, startIndex, endIndex
     return false;
   }
   return true;
+}
+
+export function findNearestTag(string, startingIndex, excludeClosing = false) {
+  let includedTags = [...tags];
+  if (excludeClosing) {
+    includedTags = includedTags.filter((tag) => !tag.startsWith('[/'));
+  }
+  const nearest = includedTags.reduce(({ index, tag }, newTag) => {
+    const distance = string.indexOf(newTag, startingIndex);
+    if ((distance < index || index === -1) && distance !== -1 && !isAreaBetween('ESCAPE START', 'ESCAPE END', string, distance, distance)) {
+      return { index: distance, tag: newTag };
+    }
+    return { index, tag };
+  }, { index: -1, tag: '' });
+  if (nearest === -1) {
+    return { index: -1, tag: 'not found' };
+  }
+  return nearest;
 }
 
 export function removeTagFromArea(text, startIndex, endIndex, startTag, endTag) {
@@ -61,27 +78,39 @@ export function removeTagFromArea(text, startIndex, endIndex, startTag, endTag) 
   }
   return { text: newText, startingIndex: newStartIndex, endIndex: newEndIndex };
 }
+// when an effect containing another closes before the next one it contains, this fixes it.
+export function fixHierarchy(text) {
+  let newText = text;
+  const openTags = [];
+  let nextTag = findNearestTag(text, 0);
+  while (nextTag.index !== -1) {
+    if (nextTag.tag.startsWith('[/')) {
+      if (openTags[openTags.length - 1] !== getSymbol(nextTag.tag)) {
+        // this is what we have to fix.
+        let tagIndex = nextTag.index - nextTag.tag.length;
+        const tagText = nextTag.tag;
+        const closingIndex = openTags.indexOf(getSymbol(nextTag.tag));
+        newText = openTags.slice(closingIndex + 1).reverse().reduce((currentText, symbol) => {
+          tagIndex += `[/${symbol}]`.length;
+          // we add a closing before and an opening after
+          return `${currentText.substring(0, tagIndex)}[/${symbol}]${currentText.substring(tagIndex, tagIndex + tagText.length)}[${symbol}]${currentText.substring(tagIndex + tagText.length)}`;
+        }, newText);
+        // we need to move the tag index after making the changes because we added stuff before it.
+        nextTag.index = tagIndex;
+      } else {
+        openTags.pop();
+      }
+    } else {
+      openTags.push(getSymbol(nextTag.tag));
+    }
+    nextTag = findNearestTag(text, nextTag.index + nextTag.tag.length);
+  }
+  return newText;
+}
+
 export function giveEffectToArea(text, startIndex, endIndex, startTag, endTag) {
   const newText = removeTagFromArea(text, startIndex, endIndex, startTag, endTag);
   return fixHierarchy(`${newText.text.substring(0, newText.startingIndex)}${startTag}${newText.text.substring(newText.startingIndex, newText.endIndex)}${endTag}${newText.text.substring(newText.endIndex)}`);
-}
-
-export function findNearestTag(string, startingIndex, excludeClosing = false) {
-  let includedTags = [...tags];
-  if (excludeClosing) {
-    includedTags = includedTags.filter((tag) => !tag.startsWith('[/'));
-  }
-  const nearest = includedTags.reduce(({ index, tag }, newTag) => {
-    const distance = string.indexOf(newTag, startingIndex);
-    if ((distance < index || index === -1) && distance !== -1 && !isAreaBetween('ESCAPE START', 'ESCAPE END', string, distance, distance)) {
-      return { index: distance, tag: newTag };
-    }
-    return { index, tag };
-  }, { index: -1, tag: '' });
-  if (nearest === -1) {
-    return { index: -1, tag: 'not found' };
-  }
-  return nearest;
 }
 
 export function removeUselessTags(string) {
@@ -113,36 +142,6 @@ export function removeUselessTags(string) {
     lastTag = startTag;
   }
   return newString;
-}
-
-// when an effect containing another closes before the next one it contains, this fixes it.
-export function fixHierarchy(text) {
-  let newText = text;
-  const openTags = [];
-  let nextTag = findNearestTag(text, 0);
-  while (nextTag.index !== -1) {
-    if (nextTag.tag.startsWith('[/')) {
-      if (openTags[openTags.length - 1] !== getSymbol(nextTag.tag)) {
-        // this is what we have to fix.
-        let tagIndex = nextTag.index - nextTag.tag.length;
-        const tagText = nextTag.tag;
-        const closingIndex = openTags.indexOf(getSymbol(nextTag.tag));
-        newText = openTags.slice(closingIndex + 1).reverse().reduce((currentText, symbol) => {
-          tagIndex += `[/${symbol}]`.length;
-          // we add a closing before and an opening after
-          return `${currentText.substring(0, tagIndex)}[/${symbol}]${currentText.substring(tagIndex, tagIndex + tagText.length)}[${symbol}]${currentText.substring(tagIndex + tagText.length)}`;
-        }, newText);
-        // we need to move the tag index after making the changes because we added stuff before it.
-        nextTag.index = tagIndex;
-      } else {
-        openTags.pop();
-      }
-    } else {
-      openTags.push(getSymbol(nextTag.tag));
-    }
-    nextTag = findNearestTag(text, nextTag.index + nextTag.tag.length);
-  }
-  return newText;
 }
 
 export function getRawIndex(text, renderIndex) {
