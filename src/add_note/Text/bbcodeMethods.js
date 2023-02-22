@@ -3,6 +3,12 @@ const tags = ['[b]', '[/b]', '[i]', '[/i]', '[img]', '[/img]'];
 export function getEnd(openTag) {
   return `[/${openTag.substring(1)}`;
 }
+export function getSymbol(tag) {
+  if (tag.startsWith('[/')) {
+    return tag.substring(2, tag.length - 1);
+  }
+  return tag.substring(1, tag.length - 1);
+}
 
 export function isAreaBetween(startingTag, endingTag, text, startIndex, endIndex) {
   const currentIndex = text.lastIndexOf(startingTag, startIndex);
@@ -15,37 +21,57 @@ export function isAreaBetween(startingTag, endingTag, text, startIndex, endIndex
   return true;
 }
 
-export function giveEffectToArea(text, startIndex, endIndex, startTag, endTag) {
+export function removeTagFromArea(text, startIndex, endIndex, startTag, endTag) {
   let newText = text;
-  let newEndIndex;
-  const startTagIndex = text.lastIndexOf(startTag, startIndex);
-  const isClosedBeforeSelection = startTagIndex === -1
-  || text.indexOf(endTag, startTagIndex) < startTag;
-  if (isClosedBeforeSelection) {
-    const startingTagInSelection = text.indexOf(startIndex, startTag);
-    if (startingTagInSelection === -1 || startingTagInSelection > endIndex) {
-      // this means that the effect doesnt start inside or before the selection
-      // and therefore doesnt end inside it either so we can return now.
-      return `${text.substring(0, startIndex - 1)}${startTag}${text.substring(startIndex - 1, endIndex)}${endTag}${text.substring(endIndex)}`;
+  let newEndIndex = endIndex;
+  let newStartIndex = startIndex;
+  let startTagIndex = newText.lastIndexOf(startTag, newStartIndex);
+  if (startTagIndex === -1 || newText.indexOf(endTag, startTagIndex) < startIndex) {
+    startTagIndex = newText.indexOf(startTag, startIndex);
+  }
+  while (startTagIndex !== -1 && startTagIndex < newEndIndex) {
+    if (startTagIndex < newStartIndex) {
+      // end the effect before the selection
+      newText = `${newText.substring(0, newStartIndex)}${endTag}${newText.substring(newStartIndex)}`;
+      newStartIndex += endTag.length;
+      newEndIndex += endTag.length;
+    } else {
+      // remove the starting tag
+      newText = `${newText.substring(0, startTagIndex)}${newText.substring(startTagIndex + startTag.length)}`;
+      newEndIndex -= startTag.length;
     }
-    // this means that the effect starts in the selection, and we gottas move it to the start.
-    const selectionText = text.substring(startIndex, endIndex).replace(startTag, '');
-    newText = `${text.substring(0, startIndex - 1)}${startTag}${selectionText}${text.substring(endIndex + 1)}`;
-    newEndIndex -= startTag.length;
+    // now we assume the starting tag was already dealt with
+    let latestClosing;
+    if (startTagIndex > newStartIndex) {
+      latestClosing = newText.indexOf(endTag, startTagIndex);
+    } else {
+      latestClosing = newText.indexOf(endTag, newStartIndex);
+    }
+    if (latestClosing === -1) {
+      throw Error(`invalid bbcode given, tag ${startTag}doesnt end.`);
+    }
+    if (latestClosing > newEndIndex) {
+      newText = `${newText.substring(0, newEndIndex)}${startTag}${newText.substring(newEndIndex)}`;
+    } else {
+      // delete the end too.
+      newText = `${newText.substring(0, latestClosing)}${newText.substring(latestClosing + endTag.length)}`;
+      newEndIndex -= endTag.length;
+    }
+    startTagIndex = newText.indexOf(startTag, startTagIndex + startTag.length);
   }
-  const endTagIndex = newText.indexOf(endTag, startIndex);
-  if (endIndex === -1) {
-    throw Error(`invalid BBCode text given, ${startTag} doesnt close`);
-  }
-  if (endTagIndex > newEndIndex) {
-    return newText;
-  }
-  // this means that the effect ends in the selection, and we gottas move it to the end.
-  const selectionText = text.substring(startIndex - 1, endIndex).replace(endTag, '');
-  return `${text.substring(0, startIndex - 1)}${selectionText}${endTag}${text.substring(endIndex)}`;
+  return { text: newText, startingIndex: newStartIndex, endIndex: newEndIndex };
 }
-export function findNearestTag(string, startingIndex) {
-  const nearest = tags.reduce(({ index, tag }, newTag) => {
+export function giveEffectToArea(text, startIndex, endIndex, startTag, endTag) {
+  const newText = removeTagFromArea(text, startIndex, endIndex, startTag, endTag);
+  return fixHierarchy(`${newText.text.substring(0, newText.startingIndex)}${startTag}${newText.text.substring(newText.startingIndex, newText.endIndex)}${endTag}${newText.text.substring(newText.endIndex)}`);
+}
+
+export function findNearestTag(string, startingIndex, excludeClosing = false) {
+  let includedTags = [...tags];
+  if (excludeClosing) {
+    includedTags = includedTags.filter((tag) => !tag.startsWith('[/'));
+  }
+  const nearest = includedTags.reduce(({ index, tag }, newTag) => {
     const distance = string.indexOf(newTag, startingIndex);
     if ((distance < index || index === -1) && distance !== -1 && !isAreaBetween('ESCAPE START', 'ESCAPE END', string, distance, distance)) {
       return { index: distance, tag: newTag };
@@ -64,7 +90,7 @@ export function removeUselessTags(string) {
   let lastTag = { tag: '', index: 0 };
   while (lastTag.index !== -1) {
     const currentIndex = lastTag.index + lastTag.tag.length;
-    const startTag = findNearestTag(currentString, currentIndex);
+    const startTag = findNearestTag(currentString, currentIndex, true);
     if (startTag.index !== -1) {
       const endTagIndex = currentString.indexOf(
         getEnd(startTag.tag),
@@ -73,19 +99,50 @@ export function removeUselessTags(string) {
 
       newString += currentString.substring(currentIndex, startTag.index);
 
-      // check if tag is empty, closing tags are not checked
-      if ((endTagIndex !== -1 && endTagIndex !== startTag.index + startTag.tag.length) || startTag.tag.startsWith('[/')) {
+      // check if tag is empty
+      if (endTagIndex !== startTag.index + startTag.tag.length) {
         // add current tag to new string
         newString += startTag.tag;
       } else {
         // Remove end tag too
         currentString = `${currentString.substring(0, endTagIndex)}${currentString.substring(endTagIndex + getEnd(startTag.tag).length)}`;
       }
+    } else {
+      newString += currentString.substring(lastTag.index + lastTag.tag.length);
     }
-    newString += currentString.substring(lastTag.index + lastTag.length);
     lastTag = startTag;
   }
   return newString;
+}
+
+// when an effect containing another closes before the next one it contains, this fixes it.
+export function fixHierarchy(text) {
+  let newText = text;
+  const openTags = [];
+  let nextTag = findNearestTag(text, 0);
+  while (nextTag.index !== -1) {
+    if (nextTag.tag.startsWith('[/')) {
+      if (openTags[openTags.length - 1] !== getSymbol(nextTag.tag)) {
+        // this is what we have to fix.
+        let tagIndex = nextTag.index - nextTag.tag.length;
+        const tagText = nextTag.tag;
+        const closingIndex = openTags.indexOf(getSymbol(nextTag.tag));
+        newText = openTags.slice(closingIndex + 1).reverse().reduce((currentText, symbol) => {
+          tagIndex += `[/${symbol}]`.length;
+          // we add a closing before and an opening after
+          return `${currentText.substring(0, tagIndex)}[/${symbol}]${currentText.substring(tagIndex, tagIndex + tagText.length)}[${symbol}]${currentText.substring(tagIndex + tagText.length)}`;
+        }, newText);
+        // we need to move the tag index after making the changes because we added stuff before it.
+        nextTag.index = tagIndex;
+      } else {
+        openTags.pop();
+      }
+    } else {
+      openTags.push(getSymbol(nextTag.tag));
+    }
+    nextTag = findNearestTag(text, nextTag.index + nextTag.tag.length);
+  }
+  return newText;
 }
 
 export function getRawIndex(text, renderIndex) {
@@ -115,8 +172,8 @@ function isIndexInsideTag(index, text) {
   }
   // if its inside the last tag scanned
   if (lastTag !== undefined
-     && lastTag.index < currentIndex
-     && lastTag.index + lastTag.tag.length >= currentIndex) {
+    && lastTag.index < currentIndex
+    && lastTag.index + lastTag.tag.length >= currentIndex) {
     return { overlap: currentIndex - lastTag.index, tag: lastTag };
   }
   return false;

@@ -40,17 +40,14 @@ function getChildren(string, index, endTag) {
 
     length = nearestTag.index + nearestTag.tag.length;
 
-    if (nearestTag.tag === endTag) {
+    if (nearestTag.tag === endTag || nearestTag.index === -1) {
       break;
     }
-
-    length = nearestTag.index + nearestTag.tag.length;
-    if (nearestTag.index !== -1 && !nearestTag.tag.startsWith('[/')) {
-      const nextTag = getChildren(string, length, rawMethods.getEnd(nearestTag.tag));
-      children.push(addChildrenToTag(nearestTag.tag, nextTag.children, length));
-      length = nextTag.length;
-    }
+    const nextTag = getChildren(string, length, rawMethods.getEnd(nearestTag.tag));
+    children.push(addChildrenToTag(nearestTag.tag, nextTag.children, length));
+    length = nextTag.length;
   }
+
   return { children: children.join(''), endTag: nearestTag, length };
 }
 

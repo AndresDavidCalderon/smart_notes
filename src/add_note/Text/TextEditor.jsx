@@ -49,6 +49,40 @@ function TextEditor({ note, noteChanger }) {
     setSelectionSafe({ start: selection.start + text.length, end: selection.start + text.length });
   };
 
+  const toggleEffect = (tag) => {
+    const rawSelection = getRawSelection();
+    if (rawMethods.isAreaBetween(
+      tag,
+      rawMethods.getEnd(tag),
+      note.text,
+
+      rawSelection.start,
+      rawSelection.end,
+    )) {
+      noteChanger({
+        text: rawMethods.removeTagFromArea(
+          note.text,
+          rawSelection.start,
+          rawSelection.end,
+
+          tag,
+          rawMethods.getEnd(tag),
+        ).text,
+      });
+    } else {
+      noteChanger({
+        text: rawMethods.giveEffectToArea(
+          note.text,
+          rawSelection.start,
+          rawSelection.end,
+
+          tag,
+          rawMethods.getEnd(tag),
+        ),
+      });
+    }
+  };
+
   const manageInput = async (event) => {
     switch (event.nativeEvent.inputType) {
       case 'insertText': {
@@ -85,13 +119,11 @@ function TextEditor({ note, noteChanger }) {
         break;
       }
       case 'formatBold': {
-        const rawSelection = getRawSelection();
-        noteChanger({ text: rawMethods.giveEffectToArea(note.text, rawSelection.start, rawSelection.end, '[b]', '[/b]') });
+        toggleEffect('[b]');
         break;
       }
       case 'formatItalic': {
-        const rawSelection = getRawSelection();
-        noteChanger({ text: rawMethods.giveEffectToArea(note.text, rawSelection.start, rawSelection.end, '[i]', '[/i]') });
+        toggleEffect('[i]');
         break;
       }
       case 'insertParagraph': {
