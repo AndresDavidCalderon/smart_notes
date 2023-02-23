@@ -3,6 +3,10 @@ import PropTypes from 'prop-types';
 import * as rawMethods from './bbcodeMethods';
 import './TextRenderer.css';
 
+function escapeHTML(string) {
+  return string.replaceAll('"', '&quot').replaceAll('&', '&amp').replaceAll('<', '$lt').replaceAll('>', '&gt');
+}
+
 // the index is used as key
 function addChildrenToTag(tag, children, _index) {
   switch (tag) {
@@ -19,9 +23,10 @@ function addChildrenToTag(tag, children, _index) {
       } else {
         [text] = children;
       }
-      const endingIndex = text.length - 'ESCAPE END'.length - 1;
+      const endingIndex = text.length - 'ESCAPE END'.length;
       const startingIndex = 'ESCAPE START'.length;
-      return `<img height=80 alt="uploaded" src=${`${text.substring(startingIndex, endingIndex)}`}/>`;
+      const url = escapeHTML(text.substring(startingIndex, endingIndex));
+      return `<img height=80 alt="uploaded" src="${`${url}`}" />`;
     }
     case 'none': {
       return `<span>${children}</span>`;
@@ -43,7 +48,12 @@ function getChildren(string, index, endTag) {
       ? string.substring(length)
       : string.substring(length, nearestTag.index));
 
-    length = nearestTag.index + nearestTag.tag.length;
+    if (nearestTag.index !== -1) {
+      length = nearestTag.index + nearestTag.tag.length;
+    } else {
+      length = string.length;
+      break;
+    }
 
     if (nearestTag.tag === endTag || nearestTag.index === -1) {
       break;

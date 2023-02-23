@@ -19,6 +19,14 @@ export function isAreaBetween(startingTag, endingTag, text, startIndex, endIndex
   }
   return true;
 }
+function isIndexBetween(startingTag, endingTag, text, index) {
+  const lastTag = text.lastIndexOf(startingTag, index);
+  if (lastTag === -1) {
+    return false;
+  }
+  const closing = text.indexOf(endingTag, lastTag);
+  return closing > index;
+}
 
 export function findNearestTag(string, startingIndex, excludeClosing = false) {
   let includedTags = [...tags];
@@ -27,7 +35,8 @@ export function findNearestTag(string, startingIndex, excludeClosing = false) {
   }
   const nearest = includedTags.reduce(({ index, tag }, newTag) => {
     const distance = string.indexOf(newTag, startingIndex);
-    if ((distance < index || index === -1) && distance !== -1 && !isAreaBetween('ESCAPE START', 'ESCAPE END', string, distance, distance)) {
+    const isEscaped = isIndexBetween('ESCAPE START', 'ESCAPE END', string, distance);
+    if ((distance < index || index === -1) && distance !== -1 && !isEscaped) {
       return { index: distance, tag: newTag };
     }
     return { index, tag };
