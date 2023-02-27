@@ -1,20 +1,34 @@
 import { PropTypes } from 'prop-types';
-import { giveEffectToArea, getEnd } from '../bbcodeMethods';
+import {
+  giveEffectToArea, getEnd, isAreaBetween, removeTagFromArea,
+} from '../bbcodeMethods';
 import './EffectAdder.css';
 
 function EffectAdder({
   buttonContent, text, tag, noteChanger, rawSelection,
 }) {
   const addEffect = () => {
-    noteChanger({
-      text: giveEffectToArea(
-        text,
-        rawSelection.start,
-        rawSelection.end,
-        tag,
-        getEnd(tag),
-      ),
-    });
+    if (isAreaBetween(tag, getEnd(tag), text, rawSelection.start, rawSelection.end)) {
+      noteChanger({
+        text: removeTagFromArea(
+          text,
+          rawSelection.start,
+          rawSelection.end,
+          tag,
+          getEnd(tag),
+        ).text,
+      });
+    } else {
+      noteChanger({
+        text: giveEffectToArea(
+          text,
+          rawSelection.start,
+          rawSelection.end,
+          tag,
+          getEnd(tag),
+        ),
+      });
+    }
   };
   return <button id="effect_adder" type="button" onClick={addEffect}>{buttonContent}</button>;
 }

@@ -116,7 +116,7 @@ function TextEditor({ note, noteChanger }) {
             ),
           });
         }
-        setSelection({ anchor: selection.start - 1, focus: selection.start - 1 });
+        setSelection({ anchor: selection.anchor - 1, focus: selection.focus - 1 });
         break;
       }
       case 'formatBold': {
