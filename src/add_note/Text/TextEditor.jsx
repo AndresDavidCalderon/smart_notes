@@ -87,6 +87,7 @@ function TextEditor({ note, noteChanger }) {
   const manageInput = async (event) => {
     switch (event.nativeEvent.inputType) {
       case 'insertCompositionText':
+      case 'insertReplacementText':
       case 'insertText': {
         insertTextOnSelection(event.nativeEvent.data);
         break;
