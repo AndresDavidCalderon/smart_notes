@@ -1,3 +1,5 @@
+// This files contain useful functions for a renderer of BBcode, and has to deal with nodes.
+
 function charsInNode(node) {
   if (node.nodeType === Node.TEXT_NODE) {
     return node.textContent.length;
@@ -65,19 +67,18 @@ export function getSelectionRange(textArea) {
       || (!textArea.contains(globalSelection.focusNode))) {
     return null;
   }
-  const selection = [getSelectionIndex(
-    textArea,
-    globalSelection.anchorOffset,
-    globalSelection.anchorNode,
-  ),
-  getSelectionIndex(
-    textArea,
-    globalSelection.focusOffset,
-    globalSelection.focusNode,
-  )];
-
-  const orderedSelection = { start: Math.min(...selection), end: Math.max(...selection) };
-  return orderedSelection;
+  return {
+    anchor: getSelectionIndex(
+      textArea,
+      globalSelection.anchorOffset,
+      globalSelection.anchorNode,
+    ),
+    focus: getSelectionIndex(
+      textArea,
+      globalSelection.focusOffset,
+      globalSelection.focusNode,
+    ),
+  };
 }
 
 function getNodeAtChars(parent, index) {
@@ -110,21 +111,21 @@ function getNodeAtChars(parent, index) {
   return { node: topNode, offset: index - baseCharachters };
 }
 
-export function SelectFromTo(startIndex, endIndex, textArea) {
+export function applySelection(anchorIndex, focusIndex, textArea) {
   const globalSelection = window.getSelection();
   globalSelection.removeAllRanges();
   const newRange = new Range();
-  const start = getNodeAtChars(textArea, startIndex);
-  const end = getNodeAtChars(textArea, endIndex);
-  if (start.node.tagName !== 'IMG') {
-    newRange.setStart(start.node, start.offset);
+  const anchor = getNodeAtChars(textArea, anchorIndex);
+  const focus = getNodeAtChars(textArea, focusIndex);
+  if (anchor.node.tagName !== 'IMG') {
+    newRange.setStart(anchor.node, anchor.offset);
   } else {
-    newRange.setStart(textArea, Array.from(textArea.childNodes).indexOf(start.node) + 1);
+    newRange.setStart(textArea, Array.from(textArea.childNodes).indexOf(anchor.node) + 1);
   }
-  if (end.node.tagName !== 'IMG') {
-    newRange.setEnd(end.node, end.offset);
+  if (focus.node.tagName !== 'IMG') {
+    newRange.setEnd(focus.node, focus.offset);
   } else {
-    newRange.setEnd(textArea, Array.from(textArea.childNodes).indexOf(end.node) + 1);
+    newRange.setEnd(textArea, Array.from(textArea.childNodes).indexOf(focus.node) + 1);
   }
   globalSelection.addRange(newRange);
 }

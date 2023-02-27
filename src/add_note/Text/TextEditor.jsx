@@ -12,24 +12,23 @@ import './TextEditor.css';
 function TextEditor({ note, noteChanger }) {
   const textArea = useRef();
 
-  const [selection, setSelection] = useState({ start: 0, end: 0 });
+  const [selection, setSelection] = useState({ focus: 0, anchor: 0 });
 
-  function getRawSelection() {
+  function getOrderedSelection() {
+    const realSelection = [selection.focus, selection.anchor];
     return {
-      start: rawMethods.getRawIndex(note.text, selection.start),
-      end: rawMethods.getRawIndex(note.text, selection.end),
+      start: Math.min(...realSelection),
+      end: Math.max(...realSelection),
     };
   }
-  const setSelectionSafe = (start, end) => {
-    if (start < 0) {
-      throw Error('Invalid selection start, index must be greater than 0');
-    }
-    if (end > note.text.length - 1) {
-      throw Error('Invalid selection end, index must be inside text.');
-    }
-    setSelection(start, end);
-  };
 
+  function getRawSelection() {
+    const orderedSelection = getOrderedSelection();
+    return {
+      start: rawMethods.getRawIndex(note.text, orderedSelection.start),
+      end: rawMethods.getRawIndex(note.text, orderedSelection.end),
+    };
+  }
   const handleSelection = () => {
     const newSelection = renderedMethods.getSelectionRange(textArea.current);
     if (JSON.stringify(newSelection) !== JSON.stringify(selection) && newSelection !== null) {
@@ -38,7 +37,7 @@ function TextEditor({ note, noteChanger }) {
   };
   useEffect(() => {
     if (textArea.current !== undefined) {
-      renderedMethods.SelectFromTo(selection.start, selection.end, textArea.current);
+      renderedMethods.applySelection(selection.anchor, selection.focus, textArea.current);
     }
   }, [selection]);
   useEffect(() => {
@@ -46,8 +45,9 @@ function TextEditor({ note, noteChanger }) {
     return () => { document.removeEventListener('selectionchange', handleSelection); };
   });
   const insertTextOnSelection = (text) => {
-    noteChanger({ text: `${note.text.substring(0, rawMethods.getRawIndex(note.text, selection.start))}${text}${note.text.substring(rawMethods.getRawIndex(note.text, selection.end))}` });
-    setSelectionSafe({ start: selection.start + text.length, end: selection.start + text.length });
+    const rawOrderedSelection = getRawSelection();
+    noteChanger({ text: `${note.text.substring(0, rawOrderedSelection.start)}${text}${note.text.substring(rawOrderedSelection.end)}` });
+    setSelection({ anchor: selection.anchor + text.length, focus: selection.anchor + text.length });
   };
 
   const toggleEffect = (tag) => {
@@ -116,7 +116,7 @@ function TextEditor({ note, noteChanger }) {
             ),
           });
         }
-        setSelection({ start: selection.start - 1, end: selection.start - 1 });
+        setSelection({ anchor: selection.start - 1, focus: selection.start - 1 });
         break;
       }
       case 'formatBold': {
