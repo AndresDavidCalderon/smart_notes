@@ -22,11 +22,6 @@ module.exports = {
   },
   software: [
     {
-      name: 'marked',
-      license_name: 'MIT',
-      copyright: 'Copyright (c) 2018+, MarkedJS (https://github.com/markedjs/) Copyright (c) 2011-2018, Christopher Jeffrey (https://github.com/chjj/)',
-    },
-    {
       name: 'react',
       license_name: 'MIT',
       copyright: 'Copyright (c) Meta Platforms, Inc. and affiliates.',
