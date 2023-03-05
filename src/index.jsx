@@ -4,6 +4,7 @@ import './index.css';
 import AddNote from './add_note/AddNote';
 import NoteList from './NoteList';
 import About from './about_app/About';
+import './add_note/AddNote.css';
 
 const timeUnits = ['day', 'week', 'month', 'year'];
 const localTimeUnits = [
@@ -164,7 +165,7 @@ class App extends React.Component {
             language={language}
           />
         ) : false}
-        <button type="button" aria-label="add note" id="add_button" onClick={() => { this.showAddNote(true); }} hidden={addingNote} />
+        <button type="button" aria-label="add note" className="floating_button" id="add_button" onClick={() => { this.showAddNote(true); }} hidden={addingNote} />
         <About />
         <select id="language_selector" onChange={this.setLanguage} value={language}>
           <option value="en">English</option>

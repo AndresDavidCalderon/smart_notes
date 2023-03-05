@@ -58,3 +58,10 @@
   right: 20px;
   z-index: 1;
 }
+
+.floating_button{
+  width: 40px;
+  right: 40px;
+  border-radius: 6px;
+  border: gray solid 2px;
+}

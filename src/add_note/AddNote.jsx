@@ -135,10 +135,10 @@ class AddNote extends React.Component {
           />
         ) : false}
         <div id="draft_option_container">
-          {note.exists ? <button id="delete_note" className="draft_option" onClick={this.deleteNote} type="button" aria-label="cancel draft" />
-            : <button className="draft_option" type="button" id="delete_draft" aria-label="erase draft" onClick={this.cancelNote} />}
+          {note.exists ? <button id="delete_note" className="draft_option floating_button" onClick={this.deleteNote} type="button" aria-label="cancel draft" />
+            : <button className="draft_option floating_button" type="button" id="delete_draft" aria-label="erase draft" onClick={this.cancelNote} />}
           <button
-            className="draft_option"
+            className="draft_option floating_button"
             id="confirm_note"
             onClick={() => {
               note.text = removeUselessTags(note.text);
