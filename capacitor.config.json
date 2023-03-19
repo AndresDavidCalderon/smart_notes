@@ -1,0 +1,6 @@
+{
+  "appId": "io.voidgames.smartnotes",
+  "appName": "smart notes",
+  "webDir": "./dist",
+  "bundledWebRuntime": false
+}

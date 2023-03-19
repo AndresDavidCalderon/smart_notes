@@ -1,6 +1,7 @@
 module.exports = {
   packagerConfig: {
     icon: '/public/icons/icon',
+    executableName: 'smart notes',
   },
   makers: [
     {

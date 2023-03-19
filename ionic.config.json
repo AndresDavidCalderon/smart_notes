@@ -1,0 +1,7 @@
+{
+  "name": "smart notes",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}
