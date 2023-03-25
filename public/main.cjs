@@ -21,7 +21,7 @@ if (squirrelStartup) app.quit();
 let tray;
 let window;
 
-require('./Reminders.cjs');
+require('./reminders.cjs');
 
 function CreateWindow() {
   window = new BrowserWindow({
@@ -49,7 +49,7 @@ function CloseApp() {
 }
 
 function installLocalDevTools() {
-  session.defaultSession.loadExtension('/mnt/4E08692208690A73/reactDev');
+  session.defaultSession.loadExtension(process.env.REACT_DEVTOOLS_PATH);
 }
 
 app.on('ready', () => {
