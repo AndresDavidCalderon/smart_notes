@@ -1,6 +1,14 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import * as licenses from './software';
 import './About.css';
+
+const text = {
+  title: {
+    en: 'Third party licenses',
+    es: 'Licensias de software de terceros',
+  },
+};
 
 class AboutApp extends React.Component {
   constructor(props) {
@@ -31,6 +39,7 @@ class AboutApp extends React.Component {
 
   render() {
     const { visible, openLicense } = this.state;
+    const { language } = this.props;
     return (
       <div>
         <button type="button" id="open_about" aria-label="about smart notes" onClick={this.ToggleVisibility} />
@@ -38,6 +47,7 @@ class AboutApp extends React.Component {
           visible ? (
             <div id="about_dialogue">
               <button type="button" id="close_about" onClick={this.ToggleVisibility}>x</button>
+              <h1>{text.title[language]}</h1>
               {
                 licenses.software.map((software) => <button className="software" key={software.name} onClick={() => { this.displayLicense(software); }} type="button">{software.name}</button>)
               }
@@ -58,5 +68,9 @@ class AboutApp extends React.Component {
     );
   }
 }
+
+AboutApp.propTypes = {
+  language: PropTypes.string.isRequired,
+};
 
 export default AboutApp;

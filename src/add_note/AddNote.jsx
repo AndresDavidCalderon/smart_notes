@@ -26,6 +26,10 @@ const text = {
       en: 'add reminder',
       es: 'añadir recordatorio',
     },
+    disabled: {
+      en: 'Reminders only work on desktop',
+      es: 'Los recordatorios solo funcionan en la app de escritorio',
+    },
   },
 };
 
@@ -163,7 +167,8 @@ class AddNote extends React.Component {
 
           {note.reminders.length > 0 ? <h2>{text.reminders.title[language]}</h2> : false}
 
-          <button type="button" onClick={this.newReminder}>{text.reminders.add[language]}</button>
+          <button type="button" disabled={!Object.hasOwn(window, 'api')} onClick={this.newReminder}>{text.reminders.add[language]}</button>
+          { Object.hasOwn(window, 'api') ? undefined : <p>{text.reminders.disabled[language]}</p>}
           {note.reminders.map((reminderObject, _reminderIndex) => (
             <ReminderItem
               key={reminderObject.id}

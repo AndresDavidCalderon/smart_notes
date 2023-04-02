@@ -166,7 +166,7 @@ class App extends React.Component {
           />
         ) : false}
         <button type="button" aria-label="add note" className="floating_button" id="add_button" onClick={() => { this.showAddNote(true); }} hidden={addingNote} />
-        <About />
+        <About language={language} />
         <select id="language_selector" onChange={this.setLanguage} value={language}>
           <option value="en">English</option>
           <option value="es">Español</option>
