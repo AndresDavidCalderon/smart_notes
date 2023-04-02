@@ -2,7 +2,7 @@
 An open source note-taking app which respects your privacy, with support for formatting and reminders.
 
 ## Downloads
-you can get smartnotes on itch.io here
+you can get smartnotes on the releases section of this repository.
 
 ## Compiling
 1. Make sure you have NPM installed
